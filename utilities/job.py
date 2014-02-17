@@ -349,3 +349,14 @@ class JobManager(threading.Thread):
 		"""
 		job_id = normalize_job_id(job_id)
 		return job_id in self.__jobs__
+
+	def job_is_enabled(self, job_id):
+		"""
+		Check if a job is enabled.
+
+		@type job_id: uuid.UUID
+		@param job_id: Job to check status of.
+		"""
+		job_id = normalize_job_id(job_id)
+		job_desc = self.__jobs__[job_id]
+		return job_desc['enabled']
