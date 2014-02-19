@@ -300,3 +300,20 @@ def which(program):
 		if is_exe(exe_file):
 			return exe_file
 	return None
+
+def xfrange(start, stop, step):
+	"""
+	Iterate through an arithmetic progression.
+
+	@type start: int, long, float
+	@param start: Starting number.
+
+	@type stop: int, long, float
+	@param stop: Stopping number.
+
+	@type step: int, long, float
+	@param step: Stepping size.
+	"""
+	while start < stop:
+		yield start
+		start += step
