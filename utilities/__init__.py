@@ -33,6 +33,7 @@
 import collections
 import functools
 import os
+import re
 import time
 
 __version__ = '0.1'
@@ -202,7 +203,18 @@ class SectionConfigParser(object):
 	def items(self):
 		return self.config_parser.items(self.section_name)
 
-def server_parse(server, default_port):
+def parse_case_camel_to_snake(string):
+	return re.sub('((?<=[a-z0-9])[A-Z]|(?!^)[A-Z](?=[a-z]))', r'_\1', string).lower()
+
+def parse_case_snake_to_camel(string, upper_first = True):
+	string = string.split('_')
+	first_part = string[0]
+	if upper_first:
+		first_part = first_part.title()
+	second_part = ''.join(map(lambda word: word.title(), string[1:]))
+	return first_part + second_part
+
+def parse_server(server, default_port):
 	"""
 	Convert a server string to a tuple suitable for passing to connect, for
 	example converting 'www.google.com:443' to ('www.google.com', 443).
@@ -226,7 +238,7 @@ def server_parse(server, default_port):
 			port = int(port)
 		return (host, port)
 
-def timedef_to_seconds(timedef):
+def parse_timespan(timedef):
 	"""
 	Convert a string timespan definition to seconds, for example converting
 	'1m30s' to 90.
