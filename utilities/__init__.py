@@ -272,24 +272,24 @@ def parse_timespan(timedef):
 		seconds += int(timedef)
 	return seconds
 
-def unique(seq, idfunc = None):
+def unique(seq, key = None):
 	"""
 	Unique a list or tuple and preserve the order
 
 	@type seq: list, tuple
 	@param seq: The list or tuple to preserve unique items from.
 
-	@type idfunc: Function or None
-	@param idfunc: If idfunc is provided it will be called during the
+	@type key: Function or None
+	@param key: If key is provided it will be called during the
 	comparison process.
 	"""
-	if idfunc is None:
-		idfunc = lambda x: x
+	if key is None:
+		key = lambda x: x
 	preserved_type = type(seq)
 	seen = {}
 	result = []
 	for item in seq:
-		marker = idfunc(item)
+		marker = key(item)
 		if marker in seen:
 			continue
 		seen[marker] = 1
