@@ -319,7 +319,7 @@ def which(program):
 			return exe_file
 	return None
 
-def xfrange(start, stop, step):
+def xfrange(start, stop = None, step = 1):
 	"""
 	Iterate through an arithmetic progression.
 
@@ -332,6 +332,10 @@ def xfrange(start, stop, step):
 	@type step: int, long, float
 	@param step: Stepping size.
 	"""
+	if stop == None:
+		stop = start
+		start = 0
+	start = float(start)
 	while start < stop:
 		yield start
 		start += step
