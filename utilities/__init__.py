@@ -38,6 +38,14 @@ import time
 
 __version__ = '0.1'
 
+class AttributeDict(dict):
+	"""
+	This class allows dictionary keys to be accessed as attributes. For
+	example: ad = AttributeDict(test=1); ad['test'] == ad.test
+	"""
+	__getattr__ = dict.__getitem__
+	__setattr__ = dict.__setitem__
+
 class Cache(object):
 	"""
 	This class provides a simple to use cache object which can be applied
