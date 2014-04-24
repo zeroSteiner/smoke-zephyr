@@ -161,7 +161,7 @@ class SectionConfigParser(object):
 	"""
 	Proxy access to a section of a ConfigParser object.
 	"""
-	__version__ = '0.1'
+	__version__ = '0.2'
 	def __init__(self, section_name, config_parser):
 		"""
 		@type section_name: string
@@ -202,6 +202,9 @@ class SectionConfigParser(object):
 
 	def items(self):
 		return self.config_parser.items(self.section_name)
+
+	def set(self, option, value):
+		self.config_parser.set(self.section_name, option, value)
 
 def parse_case_camel_to_snake(string):
 	return re.sub('((?<=[a-z0-9])[A-Z]|(?!^)[A-Z](?=[a-z]))', r'_\1', string).lower()
