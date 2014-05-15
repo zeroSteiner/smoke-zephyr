@@ -101,7 +101,7 @@ class FileWalker:
 	"""
 	This class is used to easily iterate over files in a directory.
 	"""
-	def __init__(self, filespath, absolute_path = False, skip_files = False, skip_dirs = False, filter_func = None):
+	def __init__(self, filespath, absolute_path=False, skip_files=False, skip_dirs=False, filter_func=None):
 		"""
 		@type filespath: string
 		@param filespath: A path to either a file or a directory.  If a
@@ -134,7 +134,7 @@ class FileWalker:
 		self.skip_dirs = skip_dirs
 		self.filter_func = filter_func
 		if os.path.isdir(self.filespath):
-			self.__iter__= self._next_dir
+			self.__iter__ = self._next_dir
 		elif os.path.isfile(self.filespath):
 			self.__iter__ = self._next_file
 
@@ -181,7 +181,7 @@ class SectionConfigParser(object):
 		self.section_name = section_name
 		self.config_parser = config_parser
 
-	def get_raw(self, option, opt_type, default = None):
+	def get_raw(self, option, opt_type, default=None):
 		get_func = getattr(self.config_parser, 'get' + opt_type)
 		if default == None:
 			return get_func(self.section_name, option)
@@ -190,16 +190,16 @@ class SectionConfigParser(object):
 		else:
 			return default
 
-	def get(self, option, default = None):
+	def get(self, option, default=None):
 		return self.get_raw(option, '', default)
 
-	def getint(self, option, default = None):
+	def getint(self, option, default=None):
 		return self.get_raw(option, 'int', default)
 
-	def getfloat(self, option, default = None):
+	def getfloat(self, option, default=None):
 		return self.get_raw(option, 'float', default)
 
-	def getboolean(self, option, default = None):
+	def getboolean(self, option, default=None):
 		return self.get_raw(option, 'boolean', default)
 
 	def has_option(self, option):
@@ -217,7 +217,7 @@ class SectionConfigParser(object):
 def parse_case_camel_to_snake(string):
 	return re.sub('((?<=[a-z0-9])[A-Z]|(?!^)[A-Z](?=[a-z]))', r'_\1', string).lower()
 
-def parse_case_snake_to_camel(string, upper_first = True):
+def parse_case_snake_to_camel(string, upper_first=True):
 	string = string.split('_')
 	first_part = string[0]
 	if upper_first:
@@ -289,7 +289,7 @@ def parse_timespan(timedef):
 		raise ValueError('invalid time format')
 	return seconds
 
-def unique(seq, key = None):
+def unique(seq, key=None):
 	"""
 	Unique a list or tuple and preserve the order
 
@@ -330,7 +330,7 @@ def which(program):
 			return exe_file
 	return None
 
-def xfrange(start, stop = None, step = 1):
+def xfrange(start, stop=None, step=1):
 	"""
 	Iterate through an arithmetic progression.
 

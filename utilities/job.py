@@ -84,7 +84,7 @@ class JobManager(threading.Thread):
 	This class provides a threaded job manager for periodically executing
 	arbitrary functions in an asynchronous fashion.
 	"""
-	def __init__(self, use_utc = True):
+	def __init__(self, use_utc=True):
 		"""
 		@type use_utc: boolean
 		@param use_utc: Whether or not to use UTC time internally.
@@ -209,7 +209,7 @@ class JobManager(threading.Thread):
 		self.job_lock.release()
 		self.shutdown.set()
 
-	def job_run(self, callback, parameters = []):
+	def job_run(self, callback, parameters=None):
 		"""
 		Add a job and run it once immediately.
 
@@ -219,6 +219,7 @@ class JobManager(threading.Thread):
 		@type parameters: list, tuple
 		@param parameters: The parameters to be provided to the callback.
 		"""
+		parameters = (parameters or ())
 		if not isinstance(parameters, (list, tuple)):
 			parameters = (parameters,)
 		job_desc = {}
@@ -238,7 +239,7 @@ class JobManager(threading.Thread):
 			self.__job_execute(job_id)
 		return job_id
 
-	def job_add(self, callback, parameters = [], hours = 0, minutes = 0, seconds = 0, tolerate_exceptions = True, expiration = None):
+	def job_add(self, callback, parameters=None, hours=0, minutes=0, seconds=0, tolerate_exceptions=True, expiration=None):
 		"""
 		Add a job to the job manager.
 
@@ -267,6 +268,7 @@ class JobManager(threading.Thread):
 		timedelta instance is provided, then the job will be removed after the
 		specified time.
 		"""
+		parameters = (parameters or ())
 		if not isinstance(parameters, (list, tuple)):
 			parameters = (parameters,)
 		job_desc = {}
