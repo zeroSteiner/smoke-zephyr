@@ -73,6 +73,9 @@ class Configuration(object):
 
 	@property
 	def configuration_file_ext(self):
+		"""
+		The extension of the current configuration file.
+		"""
 		return os.path.splitext(self.configuration_file)[1][1:]
 
 	def _serializer(self, operation, *args):
@@ -169,4 +172,3 @@ if __name__ == '__main__':
 
 	config = Configuration(arguments.config_file)
 	print(config.get(arguments.option))
-
