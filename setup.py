@@ -41,5 +41,11 @@ setup(name='Python Workshop',
 	author='Spencer McIntyre',
 	author_email='zeroSteiner@gmail.com',
 	url='https://github.com/zeroSteiner/python-workshop',
-	packages=['workshop']
+	packages=['workshop'],
+	classifiers=[
+		'Intended Audience :: Developers',
+		'License :: OSI Approved :: BSD License',
+		'Operating System :: POSIX',
+		'Programming Language :: Python'
+	]
 )
