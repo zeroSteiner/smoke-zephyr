@@ -40,6 +40,14 @@ __version__ = '0.1'
 __all__ = ['JobManager', 'JobRequestDelete']
 
 def normalize_job_id(job_id):
+	"""
+	Convert a value to a job id.
+
+	:param job_id: Value to convert.
+	:type job_id: int, str
+	:return: The job id.
+	:rtype: :py:class:`uuid.UUID`
+	"""
 	if not isinstance(job_id, uuid.UUID):
 		job_id = uuid.UUID(job_id)
 	return job_id
@@ -86,8 +94,7 @@ class JobManager(threading.Thread):
 	"""
 	def __init__(self, use_utc=True):
 		"""
-		@type use_utc: boolean
-		@param use_utc: Whether or not to use UTC time internally.
+		:param bool use_utc: Whether or not to use UTC time internally.
 		"""
 		super(JobManager, self).__init__()
 		self.__jobs__ = {}
@@ -110,7 +117,9 @@ class JobManager(threading.Thread):
 
 	def now(self):
 		"""
-		Return a datetime.datetime instance representing the current time.
+		Return a :py:class:`datetime.datetime` instance representing the current time.
+
+		:rtype: :py:class:`datetime.datetime`
 		"""
 		if self.use_utc:
 			return datetime.datetime.utcnow()
@@ -119,21 +128,23 @@ class JobManager(threading.Thread):
 
 	def now_is_after(self, dt):
 		"""
-		Check whether the datetime instance described in d is after the
+		Check whether the datetime instance described in dt is after the
 		current time.
 
-		@type dt: datetime.datetime instance
-		@param dt: datetime.datetime instance to compare against.
+		:param dt: Value to compare.
+		:type dt: :py:class:`datetime.datetime`
+		:rtype: bool
 		"""
 		return bool(dt <= self.now())
 
 	def now_is_before(self, dt):
 		"""
-		Check whether the datetime instance described in d is before the
+		Check whether the datetime instance described in dt is before the
 		current time.
 
-		@type dt: datetime.datetime instance
-		@param dt: datetime.datetime instance to compare against.
+		:param dt: Value to compare.
+		:type dt: :py:class:`datetime.datetime`
+		:rtype: bool
 		"""
 		return bool(dt >= self.now())
 
@@ -213,11 +224,11 @@ class JobManager(threading.Thread):
 		"""
 		Add a job and run it once immediately.
 
-		@type callback: function
-		@param callback: The function to run asynchronously.
-
-		@type parameters: list, tuple
-		@param parameters: The parameters to be provided to the callback.
+		:param function callback: The function to run asynchronously.
+		:param parameters: The parameters to be provided to the callback.
+		:type parameters: list, tuple
+		:return: The job id.
+		:rtype: :py:class:`uuid.UUID`
 		"""
 		parameters = (parameters or ())
 		if not isinstance(parameters, (list, tuple)):
@@ -243,30 +254,20 @@ class JobManager(threading.Thread):
 		"""
 		Add a job to the job manager.
 
-		@type callback: function
-		@param callback: The function to run asynchronously.
-
-		@type parameters: list, tuple
-		@param parameters: The parameters to be provided to the callback.
-
-		@type hours: integer
-		@param hours: Number of hours to sleep between running the callback.
-
-		@type minutes: integer
-		@param minutes: Number of minutes to sleep between running the callback.
-
-		@type seconds: integer
-		@param seconds: Number of seconds to sleep between running the callback.
-
-		@type tolerate_exceptions: boolean
-		@param tolerate_execptions: Whether to continue running a job after
-		it has thrown an exception.
-
-		@type expiration: integer, datetime.timedelta instance, datetime.datetime instance
-		@param expiration: When to expire and remove the job. If an integer is
-		provided, the job will be executed that many times.  If a datetime or
-		timedelta instance is provided, then the job will be removed after the
-		specified time.
+		:param function callback: The function to run asynchronously.
+		:param parameters: The parameters to be provided to the callback.
+		:type parameters: list, tuple
+		:param int hours: Number of hours to sleep between running the callback.
+		:param int minutes: Number of minutes to sleep between running the callback.
+		:param int seconds: Number of seconds to sleep between running the callback.
+		:param bool tolerate_execptions: Whether to continue running a job after it has thrown an exception.
+		:param expiration: When to expire and remove the job. If an integer
+			is provided, the job will be executed that many times.  If a
+			datetime or timedelta instance is provided, then the job will
+			be removed after the specified time.
+		:type expiration: int, :py:class:`datetime.timedelta`, :py:class:`datetime.datetime`
+		:return: The job id.
+		:rtype: :py:class:`uuid.UUID`
 		"""
 		parameters = (parameters or ())
 		if not isinstance(parameters, (list, tuple)):
@@ -297,12 +298,18 @@ class JobManager(threading.Thread):
 	def job_count(self):
 		"""
 		Return the number of jobs.
+
+		:return: The number of jobs.
+		:rtype: int
 		"""
 		return len(self.__jobs__)
 
 	def job_count_enabled(self):
 		"""
 		Return the number of enabled jobs.
+
+		:return: The number of jobs that are enabled.
+		:rtype: int
 		"""
 		return len(filter(lambda job_desc: job_desc['enabled'], self.__jobs__.values()))
 
@@ -310,8 +317,8 @@ class JobManager(threading.Thread):
 		"""
 		Enable a job.
 
-		@type job_id: uuid.UUID
-		@param job_id: Job identifier to enable.
+		:param job_id: Job identifier to enable.
+		:type job_id: :py:class:`uuid.UUID`
 		"""
 		job_id = normalize_job_id(job_id)
 		with self.job_lock:
@@ -320,10 +327,10 @@ class JobManager(threading.Thread):
 
 	def job_disable(self, job_id):
 		"""
-		Disable a job.
+		Disable a job. Disabled jobs will not be executed.
 
-		@type job_id: uuid.UUID
-		@param job_id: Job identifier to disable.
+		:param job_id: Job identifier to disable.
+		:type job_id: :py:class:`uuid.UUID`
 		"""
 		job_id = normalize_job_id(job_id)
 		with self.job_lock:
@@ -334,8 +341,8 @@ class JobManager(threading.Thread):
 		"""
 		Delete a job.
 
-		@type job_id: uuid.UUID
-		@param job_id: Job identifier to delete.
+		:param job_id: Job identifier to delete.
+		:type job_id: :py:class:`uuid.UUID`
 		"""
 		job_id = normalize_job_id(job_id)
 		self.logger.info('deleting job with id: ' + str(job_id) + ' and callback function: ' + self.__jobs__[job_id]['callback'].__name__)
@@ -346,8 +353,9 @@ class JobManager(threading.Thread):
 		"""
 		Check if a job identifier exists.
 
-		@type job_id: uuid.UUID
-		@param job_id: Job identifier to check.
+		:param job_id: Job identifier to check.
+		:type job_id: :py:class:`uuid.UUID`
+		:rtype: bool
 		"""
 		job_id = normalize_job_id(job_id)
 		return job_id in self.__jobs__
@@ -356,8 +364,9 @@ class JobManager(threading.Thread):
 		"""
 		Check if a job is enabled.
 
-		@type job_id: uuid.UUID
-		@param job_id: Job to check status of.
+		:param job_id: Job identifier to check the status of.
+		:type job_id: :py:class:`uuid.UUID`
+		:rtype: bool
 		"""
 		job_id = normalize_job_id(job_id)
 		job_desc = self.__jobs__[job_id]

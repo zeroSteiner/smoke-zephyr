@@ -33,6 +33,7 @@
 import copy
 import json
 import os
+import sys
 
 try:
 	import yaml
@@ -163,12 +164,19 @@ class Configuration(object):
 		file_h.write(self._serializer('dumps', self._storage))
 		file_h.close()
 
-if __name__ == '__main__':
+def main():
 	import argparse
+
 	parser = argparse.ArgumentParser(description='Parse a configuration file', conflict_handler='resolve')
 	parser.add_argument('config_file', action='store', help='configuration file to parse')
 	parser.add_argument('option', action='store', help='option to retreive the value from')
 	arguments = parser.parse_args()
 
 	config = Configuration(arguments.config_file)
+	if not config.has_option(arguments.option):
+		return 1
 	print(config.get(arguments.option))
+	return 0
+
+if __name__ == '__main__':
+	sys.exit(main())
