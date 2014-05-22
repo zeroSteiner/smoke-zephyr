@@ -41,7 +41,7 @@ __version__ = '0.1'
 class AttributeDict(dict):
 	"""
 	This class allows dictionary keys to be accessed as attributes. For
-	example: ad = AttributeDict(test=1); ad['test'] == ad.test
+	example: ``ad = AttributeDict(test=1); ad['test'] == ad.test``
 	"""
 	__getattr__ = dict.__getitem__
 	__setattr__ = dict.__setitem__
@@ -53,9 +53,9 @@ class Cache(object):
 	"""
 	def __init__(self, timeout):
 		"""
-		@type timeout: string, integer
-		@param timeout: The amount of time in seconds that a cached
-		result will be considered valid for.
+		:param timeout: The amount of time in seconds that a cached
+			result will be considered valid for.
+		:type timeout: int, str
 		"""
 		if isinstance(timeout, (str, unicode)):
 			timeout = timedef_to_seconds(timeout)
@@ -103,26 +103,17 @@ class FileWalker:
 	"""
 	def __init__(self, filespath, absolute_path=False, skip_files=False, skip_dirs=False, filter_func=None):
 		"""
-		@type filespath: string
-		@param filespath: A path to either a file or a directory.  If a
-		file is passed then that will be the only file returned during the
-		iteration.  If a directory is passed, all files will be recursively
-		returned during the iteration.
-
-		@type absolute_path: boolean
-		@param absolute_path: Whether or not the absolute path or a relative
-		path should be returned.
-
-		@type skip_files: boolean
-		@param skip_files: Whether or not to skip files.
-
-		@type skip_dirs: boolean
-		@param skip_dirs: Whether or not to skip directories.
-
-		@type filter_func: function
-		@param filter_func: If defined, the filter_func function will be called
-		for each file and if the function returns false the file will be
-		skipped.
+		:param str filespath: A path to either a file or a directory. If
+			a file is passed then that will be the only file returned
+			during the iteration. If a directory is passed, all files
+			will be recursively returned during the iteration.
+		:param bool absolute_path: Whether or not the absolute path or a
+			relative path should be returned.
+		:param bool skip_files: Whether or not to skip files.
+		:param bool skip_dirs: Whether or not to skip directories.
+		:param function filter_func: If defined, the filter_func function
+			will be called for each file and if the function returns false
+			the file will be skipped.
 		"""
 		if not (os.path.isfile(filespath) or os.path.isdir(filespath)):
 			raise Exception(filespath + ' is neither a file or directory')
@@ -172,11 +163,9 @@ class SectionConfigParser(object):
 	__version__ = '0.2'
 	def __init__(self, section_name, config_parser):
 		"""
-		@type section_name: string
-		@param section_name: Name of the section to proxy access for.
-
-		@type config_parser: ConfigParser.ConfigParser instance
-		@param config_parser: ConfigParser object to proxy access for.
+		:param str section_name: Name of the section to proxy access for.
+		:param config_parser: ConfigParser object to proxy access for.
+		:type config_parse: :py:class:`ConfigParser.ConfigParser`
 		"""
 		self.section_name = section_name
 		self.config_parser = config_parser
@@ -215,9 +204,25 @@ class SectionConfigParser(object):
 		self.config_parser.set(self.section_name, option, value)
 
 def parse_case_camel_to_snake(string):
+	"""
+	Convert a string from CamelCase to snake_case.
+
+	:param str string: The CamelCase string to convert.
+	:return: The snake_case version of string.
+	:rtype: str
+	"""
 	return re.sub('((?<=[a-z0-9])[A-Z]|(?!^)[A-Z](?=[a-z]))', r'_\1', string).lower()
 
 def parse_case_snake_to_camel(string, upper_first=True):
+	"""
+	Convert a string from snake_case to CamelCase.
+
+	:param str string: The snake_case string to convert.
+	:param bool upper_first: Whether or not to capitalize the first
+		character.
+	:return: The CamelCase version of string.
+	:rtype: str
+	"""
 	string = string.split('_')
 	first_part = string[0]
 	if upper_first:
@@ -230,12 +235,11 @@ def parse_server(server, default_port):
 	Convert a server string to a tuple suitable for passing to connect, for
 	example converting 'www.google.com:443' to ('www.google.com', 443).
 
-	@type server: string
-	@param server: The server string to convert.
-
-	@type default_port: integer
-	@param default_port: The port to use in case one is not specified in
-	the server string.
+	:param str server: The server string to convert.
+	:param int default_port: The port to use in case one is not specified
+		in the server string.
+	:return: The parsed server information.
+	:rtype: tuple
 	"""
 	server = server.split(':')
 	host = server[0]
@@ -254,8 +258,9 @@ def parse_timespan(timedef):
 	Convert a string timespan definition to seconds, for example converting
 	'1m30s' to 90.
 
-	@type timedef: string
-	@param timedef: The timespan definition to convert to seconds.
+	:param str timedef: The timespan definition to convert to seconds.
+	:return: The converted value in seconds.
+	:rtype: int
 	"""
 	converter_order = ['w', 'd', 'h', 'm', 's']
 	converters = {
@@ -291,14 +296,13 @@ def parse_timespan(timedef):
 
 def unique(seq, key=None):
 	"""
-	Unique a list or tuple and preserve the order
+	Unique a list or tuple and preserve the order.
 
-	@type seq: list, tuple
-	@param seq: The list or tuple to preserve unique items from.
-
-	@type key: Function or None
-	@param key: If key is provided it will be called during the
-	comparison process.
+	:param seq: The list or tuple to preserve unique items from.
+	:type seq: list, tuple
+	:param key: If key is provided it will be called during the
+		comparison process.
+	:type key: function, None
 	"""
 	if key is None:
 		key = lambda x: x
@@ -317,8 +321,9 @@ def which(program):
 	"""
 	Locate an executable binary's full path by its name.
 
-	@type program: string
-	@param program: The executables name.
+	:param str program: The executables name.
+	:return: The full path to the executable.
+	:rtype: str
 	"""
 	is_exe = lambda fpath: (os.path.isfile(fpath) and os.access(fpath, os.X_OK))
 	if is_exe(program):
@@ -334,14 +339,12 @@ def xfrange(start, stop=None, step=1):
 	"""
 	Iterate through an arithmetic progression.
 
-	@type start: int, long, float
-	@param start: Starting number.
-
-	@type stop: int, long, float
-	@param stop: Stopping number.
-
-	@type step: int, long, float
-	@param step: Stepping size.
+	:param start: Starting number.
+	:type start: float, int, long
+	:param stop: Stopping number.
+	:type stop: float, int, long
+	:param step: Stepping size.
+	:type step: float, int, long
 	"""
 	if stop == None:
 		stop = start

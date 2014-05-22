@@ -59,11 +59,8 @@ class Configuration(object):
 	"""
 	def __init__(self, configuration_file, prefix=''):
 		"""
-		@type configuration_file: string
-		@param configuration_file: The configuration file to parse.
-
-		@type prefix: string
-		@param prefix: String to be prefixed to all option names.
+		:param str configuration_file: The configuration file to parse.
+		:param str prefix: String to be prefixed to all option names.
 		"""
 		self.prefix = prefix
 		self.seperator = '.'
@@ -87,7 +84,11 @@ class Configuration(object):
 
 	def get_storage(self):
 		"""
-		Get a copy of the internal configuration.
+		Get a copy of the internal configuration. Changes made to the returned
+		copy will not affect this object.
+
+		:return: A copy of the internal storage object.
+		:rtype: dict
 		"""
 		return copy.deepcopy(self._storage)
 
@@ -95,8 +96,7 @@ class Configuration(object):
 		"""
 		Retrieve the value of an option.
 
-		@type item_name: string
-		@param item_name: The name of the option to retreive.
+		:param str item_name: The name of the option to retreive.
 		"""
 		if self.prefix:
 			item_name = self.prefix + self.seperator + item_name
@@ -110,8 +110,9 @@ class Configuration(object):
 		"""
 		Check that an option exists.
 
-		@type option_name: string
-		@param option_name: The name of the option to check.
+		:param str option_name: The name of the option to check.
+		:return: True of the option exists in the configuration.
+		:rtype: bool
 		"""
 		if self.prefix:
 			item_name = self.prefix + self.seperator + item_name
@@ -127,8 +128,9 @@ class Configuration(object):
 		"""
 		Checks that an option exists and that it contains sub options.
 
-		@type section_name: string
-		@param section_name: The name of the section to check.
+		:param str section_name: The name of the section to check.
+		:return: True if the section exists.
+		:rtype: dict
 		"""
 		if not self.has_option(section_name):
 			return False
@@ -138,11 +140,8 @@ class Configuration(object):
 		"""
 		Sets the value of an option in the configuration.
 
-		@type item_name: string
-		@param item_name: The name of the option to set.
-
-		@type item_value: *
-		@param item_value: The value of the option to set.
+		:param str item_name: The name of the option to set.
+		:param item_value: The value of the option to set.
 		"""
 		if self.prefix:
 			item_name = self.prefix + self.seperator + item_name
