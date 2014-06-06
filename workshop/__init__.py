@@ -170,7 +170,7 @@ class SectionConfigParser(object):
 		self.section_name = section_name
 		self.config_parser = config_parser
 
-	def get_raw(self, option, opt_type, default=None):
+	def _get_raw(self, option, opt_type, default=None):
 		get_func = getattr(self.config_parser, 'get' + opt_type)
 		if default == None:
 			return get_func(self.section_name, option)
@@ -180,27 +180,83 @@ class SectionConfigParser(object):
 			return default
 
 	def get(self, option, default=None):
-		return self.get_raw(option, '', default)
+		"""
+		Retrieve *option* from the config, returning *default* if it
+		is not present.
+
+		:param str option: The name of the value to return.
+		:param default: Default value to return if the option does not exist.
+		"""
+		return self._get_raw(option, '', default)
 
 	def getint(self, option, default=None):
-		return self.get_raw(option, 'int', default)
+		"""
+		Retrieve *option* from the config, returning *default* if it
+		is not present.
+
+		:param str option: The name of the value to return.
+		:param default: Default value to return if the option does not exist.
+		:rtype: int
+		"""
+		return self._get_raw(option, 'int', default)
 
 	def getfloat(self, option, default=None):
-		return self.get_raw(option, 'float', default)
+		"""
+		Retrieve *option* from the config, returning *default* if it
+		is not present.
+
+		:param str option: The name of the value to return.
+		:param default: Default value to return if the option does not exist.
+		:rtype: float
+		"""
+		return self._get_raw(option, 'float', default)
 
 	def getboolean(self, option, default=None):
-		return self.get_raw(option, 'boolean', default)
+		"""
+		Retrieve *option* from the config, returning *default* if it
+		is not present.
+
+		:param str option: The name of the value to return.
+		:param default: Default value to return if the option does not exist.
+		:rtype: bool
+		"""
+		return self._get_raw(option, 'boolean', default)
 
 	def has_option(self, option):
+		"""
+		Check that *option* exists in the configuration file.
+
+		:param str option: The name of the option to check.
+		:rtype: bool
+		"""
 		return self.config_parser.has_option(self.section_name, option)
 
 	def options(self):
+		"""
+		Get a list of all options that are present in the section of the
+		configuration.
+
+		:return: A list of all set options.
+		:rtype: list
+		"""
 		return self.config_parser.options(self.section_name)
 
 	def items(self):
+		"""
+		Return all options and their values in the form of a list of tuples.
+
+		:return: A list of all values and options.
+		:rtype: list
+		"""
 		return self.config_parser.items(self.section_name)
 
 	def set(self, option, value):
+		"""
+		Set an option to an arbitrary value.
+
+		:param str option: The name of the option to set.
+		:param value: The value to set the option to.
+		"""
 		self.config_parser.set(self.section_name, option, value)
 
 def parse_case_camel_to_snake(string):
@@ -219,7 +275,7 @@ def parse_case_snake_to_camel(string, upper_first=True):
 
 	:param str string: The snake_case string to convert.
 	:param bool upper_first: Whether or not to capitalize the first
-		character.
+		character of the string.
 	:return: The CamelCase version of string.
 	:rtype: str
 	"""
