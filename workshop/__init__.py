@@ -13,7 +13,7 @@
 #    copyright notice, this list of conditions and the following disclaimer
 #    in the documentation and/or other materials provided with the
 #    distribution.
-#  * Neither the name of the  nor the names of its
+#  * Neither the name of the project nor the names of its
 #    contributors may be used to endorse or promote products derived from
 #    this software without specific prior written permission.
 #
@@ -384,7 +384,7 @@ def which(program):
 	is_exe = lambda fpath: (os.path.isfile(fpath) and os.access(fpath, os.X_OK))
 	if is_exe(program):
 		return program
-	for path in os.environ["PATH"].split(os.pathsep):
+	for path in os.environ['PATH'].split(os.pathsep):
 		path = path.strip('"')
 		exe_file = os.path.join(path, program)
 		if is_exe(exe_file):
