@@ -259,6 +259,26 @@ class SectionConfigParser(object):
 		"""
 		self.config_parser.set(self.section_name, option, value)
 
+def grep(expression, file, flags=0, invert=False):
+	"""
+	Search a file and return a list of all lines that match a regular expression.
+
+	:param str expression: The regex to search for.
+	:param file: The file to search in.
+	:type file: str, file
+	:param int flags: The regex flags to use when searching.
+	:param bool invert: Select non matching lines instead.
+	:return: All the matching lines.
+	:rtype: list
+	"""
+	if isinstance(file, str):
+		file = open(file)
+	lines = []
+	for line in file:
+		if bool(re.search(expression, line, flags=flags)) ^ invert:
+			lines.append(line)
+	return lines
+
 def parse_case_camel_to_snake(string):
 	"""
 	Convert a string from CamelCase to snake_case.
