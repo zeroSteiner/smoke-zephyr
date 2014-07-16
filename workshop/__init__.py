@@ -33,8 +33,12 @@
 import collections
 import functools
 import os
+import random
 import re
+import string
 import time
+import urllib2
+import urlparse
 
 __version__ = '0.1'
 
@@ -259,6 +263,22 @@ class SectionConfigParser(object):
 		"""
 		self.config_parser.set(self.section_name, option, value)
 
+def download(url, filename=None):
+	"""
+	Download a file from a url and save it to disk.
+
+	:param str url: The URL to fetch the file from.
+	:param str filename: The destination file to write the data to.
+	"""
+	if not filename:
+		url_parts = urlparse.urlparse(url)
+		filename = os.path.basename(url_parts.path)
+	url_h = urllib2.urlopen(url)
+	with open(filename, 'wb') as file_h:
+		file_h.write(url_h.read())
+	url_h.close()
+	return
+
 def grep(expression, file, flags=0, invert=False):
 	"""
 	Search a file and return a list of all lines that match a regular expression.
@@ -370,9 +390,21 @@ def parse_timespan(timedef):
 		raise ValueError('invalid time format')
 	return seconds
 
+def random_string_alphanumeric(size):
+	"""
+	Generate a random string of *size* length consisting of both letters
+	and numbers. This function is not meant for cryptographic purposes.
+
+	:param int size: The length of the string to return.
+	:return: A string consisting of random characters.
+	:rtype: str
+	"""
+	return ''.join(random.choice(string.ascii_letters + string.digits) for x in range(size))
+
 def unique(seq, key=None):
 	"""
-	Unique a list or tuple and preserve the order.
+	Create a unique list or tuple from a provided list or tuple and preserve the
+	order.
 
 	:param seq: The list or tuple to preserve unique items from.
 	:type seq: list, tuple
