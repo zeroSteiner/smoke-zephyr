@@ -180,8 +180,8 @@ class JobManager(threading.Thread):
 			if not self.running.is_set():
 				break
 
-			# Reap Jobs
-			jobs_for_removal = []
+			# reap jobs
+			jobs_for_removal = set()
 			for job_id, job_desc in self.__jobs__.items():
 				job_obj = job_desc['job']
 				if job_obj.is_alive() or job_obj.reaped:
@@ -189,24 +189,24 @@ class JobManager(threading.Thread):
 				if job_obj.exception != None:
 					if job_desc['tolerate_exceptions'] == False:
 						self.logger.error('job ' + str(job_id) + ' encountered an error and is not set to tolerate exceptions')
-						jobs_for_removal.append(job_id)
+						jobs_for_removal.add(job_id)
 					else:
 						self.logger.warning('job ' + str(job_id) + ' encountered exception: ' + job_obj.exception.__class__.__name__)
 				if isinstance(job_desc['expiration'], int):
 					if job_desc['expiration'] <= 0:
-						jobs_for_removal.append(job_id)
+						jobs_for_removal.add(job_id)
 					else:
 						job_desc['expiration'] -= 1
 				elif isinstance(job_desc['expiration'], datetime.datetime):
 					if self.now_is_after(job_desc['expiration']):
-						jobs_for_removal.append(job_id)
+						jobs_for_removal.add(job_id)
 				if job_obj.request_delete:
-					jobs_for_removal.append(job_id)
+					jobs_for_removal.add(job_id)
 				job_obj.reaped = True
 			for job_id in jobs_for_removal:
 				self.job_delete(job_id)
 
-			# Sow Jobs
+			# sow jobs
 			for job_id, job_desc in self.__jobs__.items():
 				if job_desc['last_run'] != None and self.now_is_before(job_desc['last_run'] + job_desc['run_every']):
 					continue
@@ -346,7 +346,11 @@ class JobManager(threading.Thread):
 		"""
 		job_id = normalize_job_id(job_id)
 		self.logger.info('deleting job with id: ' + str(job_id) + ' and callback function: ' + self.__jobs__[job_id]['callback'].__name__)
+		job_desc = self.__jobs__[job_id]
 		with self.job_lock:
+			job_desc['enabled'] = False
+			if self.job_is_running(job_id):
+				job_desc['job'].join()
 			del self.__jobs__[job_id]
 
 	def job_exists(self, job_id):
@@ -371,3 +375,20 @@ class JobManager(threading.Thread):
 		job_id = normalize_job_id(job_id)
 		job_desc = self.__jobs__[job_id]
 		return job_desc['enabled']
+
+	def job_is_running(self, job_id):
+		"""
+		Check if a job is currently running. False is returned if the job does
+		not exist.
+
+		:param job_id: Job identifier to check the status of.
+		:type job_id: :py:class:`uuid.UUID`
+		:rtype: bool
+		"""
+		job_id = normalize_job_id(job_id)
+		if not job_id in self.__jobs__:
+			return False
+		job_desc = self.__jobs__[job_id]
+		if job_desc['job']:
+			return job_desc['job'].is_alive()
+		return False
