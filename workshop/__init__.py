@@ -279,6 +279,33 @@ def download(url, filename=None):
 	url_h.close()
 	return
 
+def escape_single_quote(string):
+	"""
+	Escape a string containing single quotes and backslashes with backslashes.
+	This is useful when a string is evaluated in some way.
+
+	:param str string: The string to escape.
+	:return: The escaped string.
+	:rtype: str
+	"""
+	return re.sub('(\'|\\\)', r'\\\1', string)
+
+def format_bytes_size(val):
+	"""
+	Take a number of bytes and convert it to a human readble number.
+
+	:param int val: The number of bytes to format.
+	:return: The size in a human readable format.
+	:rtype: str
+	"""
+	if not val:
+		return '0 bytes'
+	for sz_name in ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB']:
+		if val < 1024.0:
+			return "{0:.2f} {1}".format(val, sz_name)
+		val /= 1024.0
+	raise OverflowError()
+
 def grep(expression, file, flags=0, invert=False):
 	"""
 	Search a file and return a list of all lines that match a regular expression.
@@ -400,6 +427,18 @@ def random_string_alphanumeric(size):
 	:rtype: str
 	"""
 	return ''.join(random.choice(string.ascii_letters + string.digits) for x in range(size))
+
+def unescape_single_quote(string):
+	"""
+	Unescape a string which uses backslashes to escape single quotes.
+
+	:param str string: The string to unescape.
+	:return: The unescaped string.
+	:rtype: str
+	"""
+	string = string.replace('\\\\', '\\')
+	string = string.replace('\\\'', '\'')
+	return string
 
 def unique(seq, key=None):
 	"""
