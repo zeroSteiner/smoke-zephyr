@@ -35,6 +35,7 @@ import functools
 import os
 import random
 import re
+import shutil
 import string
 import time
 import urllib2
@@ -275,7 +276,7 @@ def download(url, filename=None):
 		filename = os.path.basename(url_parts.path)
 	url_h = urllib2.urlopen(url)
 	with open(filename, 'wb') as file_h:
-		file_h.write(url_h.read())
+		shutil.copyfileobj(url_h, file_h)
 	url_h.close()
 	return
 

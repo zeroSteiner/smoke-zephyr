@@ -43,7 +43,7 @@ def check_requirements(requirements_file, ignore=None):
 	:param str requirements_file: The file to parse.
 	:param ignore: A sequence of packages to ignore.
 	:type ignore: list, tuple
-	:return: A list of missing and incompatible packages.
+	:return: A list of missing or incompatible packages.
 	:rtype: list
 	"""
 	ignore = (ignore or [])

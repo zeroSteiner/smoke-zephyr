@@ -7,6 +7,14 @@
 Functions
 ---------
 
+.. autofunction:: workshop.download
+
+.. autofunction:: workshop.escape_single_quote
+
+.. autofunction:: workshop.format_bytes_size
+
+.. autofunction:: workshop.grep
+
 .. autofunction:: workshop.parse_case_camel_to_snake
 
 .. autofunction:: workshop.parse_case_snake_to_camel
@@ -14,6 +22,10 @@ Functions
 .. autofunction:: workshop.parse_server
 
 .. autofunction:: workshop.parse_timespan
+
+.. autofunction:: workshop.random_string_alphanumeric
+
+.. autofunction:: workshop.unescape_single_quote
 
 .. autofunction:: workshop.unique
 
