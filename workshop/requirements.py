@@ -35,12 +35,15 @@ import re
 
 import pkg_resources
 
-def check_requirements(requirements_file, ignore=None):
+def check_requirements(requirements, ignore=None):
 	"""
-	Parse a requirements file for package information to determine if
-	all requirements are met.
+	Parse requirements for package information to determine if all requirements
+	are met. The *requirements* argument can be a string to a requirements file,
+	a file like object to be read, or a list of strings representing the package
+	requirements.
 
-	:param str requirements_file: The file to parse.
+	:param requirements: The file to parse.
+	:type requirements: file obj, list, str, tuple
 	:param ignore: A sequence of packages to ignore.
 	:type ignore: list, tuple
 	:return: A list of missing or incompatible packages.
@@ -48,10 +51,18 @@ def check_requirements(requirements_file, ignore=None):
 	"""
 	ignore = (ignore or [])
 	not_satisfied = []
-
 	installed_packages = dict(map(lambda p: (p.project_name, p), pkg_resources.working_set))
-	file_h = open(requirements_file, 'r')
-	for req_line in file_h:
+
+	if isinstance(requirements, str):
+		with open(requirements, 'r') as file_h:
+			requirements = file_h.readlines()
+	elif hasattr(requirements, 'readlines'):
+		requirements = requirements.readlines()
+	elif not isinstance(requirements, (list, tuple)):
+		raise TypeError('invalid type for argument requirements')
+	requirements = map(lambda req: req.strip(), requirements)
+
+	for req_line in requirements:
 		parts = re.match('^([\w\-]+)(([<>=]=)(\d+(\.\d+)*))?$', req_line)
 		if not parts:
 			continue
@@ -72,5 +83,4 @@ def check_requirements(requirements_file, ignore=None):
 			not_satisfied.append(req_pkg)
 		elif parts.group(3) == '<=' and not (installed_version <= req_version):
 			not_satisfied.append(req_pkg)
-	file_h.close()
 	return not_satisfied
