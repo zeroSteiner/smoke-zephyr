@@ -418,6 +418,42 @@ def parse_timespan(timedef):
 		raise ValueError('invalid time format')
 	return seconds
 
+def parse_to_slug(string, maxlen=24):
+	"""
+	Parse a string into a slug format suitable for use in URLs and other
+	character restricted applications. Only ascii and utf-8 strings are
+	supported at this time.
+
+	:param str string: The string to parse.
+	:param int maxlen: The maximum length of the slug.
+	:return: The parsed string as a slug.
+	:rtype: str
+	"""
+	slug = ''
+	string = unicode(string, 'utf-8', 'ignore')
+	maxlen = max(maxlen, len(string))
+	for i in range(len(string)):
+		if len(slug) == maxlen:
+			break
+		c = ord(string[i])
+		if c == 0x27:
+			continue
+		elif c >= 0x30 and c <= 0x39:
+			slug += chr(c)
+		elif c >= 0x41 and c <= 0x5a:
+			slug += chr(c + 0x20)
+		elif c >= 0x61 and c <= 0x7a:
+			slug += chr(c)
+		elif c == 0xe0:
+			slug += 'a'
+		elif c == 0xe9:
+			slug += 'e'
+		elif len(slug) and slug[-1] != '-':
+			slug += '-'
+	if len(slug) and slug[-1] == '-':
+		slug = slug[:-1]
+	return slug
+
 def random_string_alphanumeric(size):
 	"""
 	Generate a random string of *size* length consisting of both letters
