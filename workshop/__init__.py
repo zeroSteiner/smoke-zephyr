@@ -421,7 +421,7 @@ def parse_timespan(timedef):
 def parse_to_slug(string, maxlen=24):
 	"""
 	Parse a string into a slug format suitable for use in URLs and other
-	character restricted applications. Only ascii and utf-8 strings are
+	character restricted applications. Only ascii strings are
 	supported at this time.
 
 	:param str string: The string to parse.
@@ -431,7 +431,7 @@ def parse_to_slug(string, maxlen=24):
 	"""
 	slug = ''
 	string = unicode(string, 'utf-8', 'ignore')
-	maxlen = max(maxlen, len(string))
+	maxlen = min(maxlen, len(string))
 	for i in range(len(string)):
 		if len(slug) == maxlen:
 			break
@@ -444,10 +444,6 @@ def parse_to_slug(string, maxlen=24):
 			slug += chr(c + 0x20)
 		elif c >= 0x61 and c <= 0x7a:
 			slug += chr(c)
-		elif c == 0xe0:
-			slug += 'a'
-		elif c == 0xe9:
-			slug += 'e'
 		elif len(slug) and slug[-1] != '-':
 			slug += '-'
 	if len(slug) and slug[-1] == '-':
