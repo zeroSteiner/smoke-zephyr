@@ -25,6 +25,8 @@ Functions
 
 .. autofunction:: workshop.random_string_alphanumeric
 
+.. autofunction:: workshop.selection_collision
+
 .. autofunction:: workshop.unescape_single_quote
 
 .. autofunction:: workshop.unique

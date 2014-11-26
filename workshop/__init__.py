@@ -265,28 +265,6 @@ class SectionConfigParser(object):
 		"""
 		self.config_parser.set(self.section_name, option, value)
 
-def birthday_collision(selections, poolsize):
-	"""
-	Calculate the probability that two random values selected from an arbitrary
-	sized pool of values will be equal.
-
-	:param int selections: The number of random selections.
-	:param int poolsize: The number of unique random values in the pool to choose from.
-	:rtype: float
-	:return: The chance that a collision will occur as a percentage.
-	"""
-	# requirments = sys
-	probability = 100.0
-	poolsize = float(poolsize)
-	if sys.version_info[0] < 3:
-		_range = xrange
-	else:
-		_range = range
-	for i in _range(selections):
-		probability = probability * (poolsize - i) / poolsize
-	probability = (100.0 - probability)
-	return probability
-
 def download(url, filename=None):
 	"""
 	Download a file from a url and save it to disk.
@@ -294,6 +272,7 @@ def download(url, filename=None):
 	:param str url: The URL to fetch the file from.
 	:param str filename: The destination file to write the data to.
 	"""
+	# requirements os, shutil, urllib2, urlparse
 	if not filename:
 		url_parts = urlparse.urlparse(url)
 		filename = os.path.basename(url_parts.path)
@@ -312,6 +291,7 @@ def escape_single_quote(string):
 	:return: The escaped string.
 	:rtype: str
 	"""
+	# requirements = re
 	return re.sub('(\'|\\\)', r'\\\1', string)
 
 def format_bytes_size(val):
@@ -342,6 +322,7 @@ def grep(expression, file, flags=0, invert=False):
 	:return: All the matching lines.
 	:rtype: list
 	"""
+	# requirements = re
 	if isinstance(file, str):
 		file = open(file)
 	lines = []
@@ -358,6 +339,7 @@ def parse_case_camel_to_snake(string):
 	:return: The snake_case version of string.
 	:rtype: str
 	"""
+	# requirements = re
 	return re.sub('((?<=[a-z0-9])[A-Z]|(?!^)[A-Z](?=[a-z]))', r'_\1', string).lower()
 
 def parse_case_snake_to_camel(string, upper_first=True):
@@ -482,7 +464,31 @@ def random_string_alphanumeric(size):
 	:return: A string consisting of random characters.
 	:rtype: str
 	"""
+	# requirements = random, string
 	return ''.join(random.choice(string.ascii_letters + string.digits) for x in range(size))
+
+def selection_collision(selections, poolsize):
+	"""
+	Calculate the probability that two random values selected from an arbitrary
+	sized pool of unique values will be equal. This is commonly known as the
+	"Birthday Problem".
+
+	:param int selections: The number of random selections.
+	:param int poolsize: The number of unique random values in the pool to choose from.
+	:rtype: float
+	:return: The chance that a collision will occur as a percentage.
+	"""
+	# requirments = sys
+	probability = 100.0
+	poolsize = float(poolsize)
+	if sys.version_info[0] < 3:
+		_range = xrange
+	else:
+		_range = range
+	for i in _range(selections):
+		probability = probability * (poolsize - i) / poolsize
+	probability = (100.0 - probability)
+	return probability
 
 def unescape_single_quote(string):
 	"""
@@ -510,13 +516,13 @@ def unique(seq, key=None):
 	if key is None:
 		key = lambda x: x
 	preserved_type = type(seq)
-	seen = {}
+	seen = []
 	result = []
 	for item in seq:
 		marker = key(item)
 		if marker in seen:
 			continue
-		seen[marker] = 1
+		seen.append(marker)
 		result.append(item)
 	return preserved_type(result)
 
@@ -528,14 +534,15 @@ def which(program):
 	:return: The full path to the executable.
 	:rtype: str
 	"""
+	# requirements = os
 	is_exe = lambda fpath: (os.path.isfile(fpath) and os.access(fpath, os.X_OK))
-	if is_exe(program):
-		return program
 	for path in os.environ['PATH'].split(os.pathsep):
 		path = path.strip('"')
 		exe_file = os.path.join(path, program)
 		if is_exe(exe_file):
 			return exe_file
+	if is_exe(program):
+		return os.path.abspath(program)
 	return None
 
 def xfrange(start, stop=None, step=1):
