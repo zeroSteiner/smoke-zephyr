@@ -37,6 +37,7 @@ import random
 import re
 import shutil
 import string
+import sys
 import time
 import urllib2
 import urlparse
@@ -263,6 +264,28 @@ class SectionConfigParser(object):
 		:param value: The value to set the option to.
 		"""
 		self.config_parser.set(self.section_name, option, value)
+
+def birthday_collision(selections, poolsize):
+	"""
+	Calculate the probability that two random values selected from an arbitrary
+	sized pool of values will be equal.
+
+	:param int selections: The number of random selections.
+	:param int poolsize: The number of unique random values in the pool to choose from.
+	:rtype: float
+	:return: The chance that a collision will occur as a percentage.
+	"""
+	# requirments = sys
+	probability = 100.0
+	poolsize = float(poolsize)
+	if sys.version_info[0] < 3:
+		_range = xrange
+	else:
+		_range = range
+	for i in _range(selections):
+		probability = probability * (poolsize - i) / poolsize
+	probability = (100.0 - probability)
+	return probability
 
 def download(url, filename=None):
 	"""
