@@ -43,6 +43,10 @@ Classes
    :special-members: __init__
    :undoc-members:
 
+.. autoclass:: workshop.BruteforceGenerator
+   :members:
+   :special-members: __init__
+
 .. autoclass:: workshop.Cache
    :members:
    :special-members: __init__

@@ -32,6 +32,7 @@
 
 import collections
 import functools
+import itertools
 import os
 import random
 import re
@@ -39,8 +40,15 @@ import shutil
 import string
 import sys
 import time
-import urllib2
-import urlparse
+
+if sys.version_info[0] < 3:
+	import urllib
+	import urlparse
+	urllib.parse = urlparse
+	urllib.request = urllib
+else:
+	import urllib.parse
+	import urllib.request
 
 __version__ = '0.1'
 
@@ -51,6 +59,51 @@ class AttributeDict(dict):
 	"""
 	__getattr__ = dict.__getitem__
 	__setattr__ = dict.__setitem__
+
+class BruteforceGenerator(object):
+	"""
+	This class allows itarating sequences for bruteforcing.
+	"""
+	# requirments = itertools
+	def __init__(self, startlen, endlen=None, charset=None):
+		"""
+		:param int startlen: The minimum sequence size to generate.
+		:param int endlen: The maximum sequence size to generate.
+		:param charset: The characters to include in the resulting sequences.
+		"""
+		self.startlen = startlen
+		if endlen == None:
+			self.endlen = startlen
+		else:
+			self.endlen = endlen
+		if charset == None:
+			charset = list(map(chr, range(0, 256)))
+		elif type(charset) == str:
+			charset = list(charset)
+		elif type(charset) == bytes:
+			charset = list(map(chr, charset))
+		charset.sort()
+		self.charset = tuple(charset)
+		self.length = self.startlen
+		self._product = itertools.product(self.charset, repeat=self.length)
+		self._next = self.__next__
+
+	def __iter__(self):
+		return self
+
+	def __next__(self):
+		return self.next()
+
+	def next(self):
+		try:
+			value = next(self._product)
+		except StopIteration:
+			if self.length == self.endlen:
+				raise StopIteration
+			self.length += 1
+			self._product = itertools.product(self.charset, repeat=self.length)
+			value = next(self._product)
+		return ''.join(value)
 
 class Cache(object):
 	"""
@@ -131,9 +184,13 @@ class FileWalker:
 		self.skip_dirs = skip_dirs
 		self.filter_func = filter_func
 		if os.path.isdir(self.filespath):
-			self.__iter__ = self._next_dir
+			self._walk = None
+			self._next = self._next_dir
 		elif os.path.isfile(self.filespath):
-			self.__iter__ = self._next_file
+			self._next = self._next_file
+
+	def __iter__(self):
+		return self._next()
 
 	def _skip(self, cur_file):
 		if self.skip_files and os.path.isfile(cur_file):
@@ -159,7 +216,7 @@ class FileWalker:
 
 	def _next_file(self):
 		if not self._skip(self.filespath):
-			yield self.filespath
+			return self.filespath
 		raise StopIteration
 
 class SectionConfigParser(object):
@@ -272,11 +329,11 @@ def download(url, filename=None):
 	:param str url: The URL to fetch the file from.
 	:param str filename: The destination file to write the data to.
 	"""
-	# requirements os, shutil, urllib2, urlparse
+	# requirements os, shutil, urllib.parse, urllib.request
 	if not filename:
-		url_parts = urlparse.urlparse(url)
+		url_parts = urllib.parse.urlparse(url)
 		filename = os.path.basename(url_parts.path)
-	url_h = urllib2.urlopen(url)
+	url_h = urllib.request.urlopen(url)
 	with open(filename, 'wb') as file_h:
 		shutil.copyfileobj(url_h, file_h)
 	url_h.close()
