@@ -61,12 +61,13 @@ class JobRequestDelete(object):
 
 class JobRun(threading.Thread):
 	def __init__(self, callback, args):
+		super(JobRun, self).__init__()
+		self.daemon = False
 		self.callback = callback
 		self.callback_args = args
 		self.request_delete = False
 		self.exception = None
 		self.reaped = False
-		threading.Thread.__init__(self)
 
 	def run(self):
 		try:
@@ -97,6 +98,7 @@ class JobManager(object):
 		:param bool use_utc: Whether or not to use UTC time internally.
 		"""
 		self._thread = threading.Thread(target=self._run)
+		self._thread.daemon = True
 		self._jobs = {}
 		self._thread_running = threading.Event()
 		self._thread_shutdown = threading.Event()
