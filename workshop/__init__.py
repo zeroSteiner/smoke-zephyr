@@ -216,7 +216,7 @@ class FileWalker:
 
 	def _next_file(self):
 		if not self._skip(self.filespath):
-			return self.filespath
+			yield self.filespath
 		raise StopIteration
 
 class SectionConfigParser(object):

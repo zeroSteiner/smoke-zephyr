@@ -175,7 +175,12 @@ def main():
 	config = Configuration(arguments.config_file)
 	if not config.has_option(arguments.option):
 		return 1
-	print(config.get(arguments.option))
+	option_value = config.get(arguments.option)
+	if isinstance(option_value, list):
+		for value in option_value:
+			print(value)
+		return 0
+	print(option_value)
 	return 0
 
 if __name__ == '__main__':
