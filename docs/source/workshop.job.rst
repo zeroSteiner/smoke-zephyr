@@ -1,8 +1,8 @@
-:mod:`workshop.job` --- Python job manager
-==========================================
+:mod:`workshop.job` --- Asynchronous job manager
+================================================
 
 .. module:: workshop.job
-   :synopsis: Python job manager
+   :synopsis: Asynchronous job manager
 
 Functions
 ---------
