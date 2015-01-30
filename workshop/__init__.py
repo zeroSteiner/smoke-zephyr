@@ -117,7 +117,7 @@ class Cache(object):
 		:type timeout: int, str
 		"""
 		if isinstance(timeout, str):
-			timeout = timedef_to_seconds(timeout)
+			timeout = parse_timespan(timeout)
 		self.cache_timeout = timeout
 		self.__cache = {}
 
