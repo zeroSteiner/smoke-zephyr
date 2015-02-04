@@ -52,6 +52,8 @@ else:
 
 __version__ = '0.1'
 
+EMAIL_REGEX = re.compile(r'^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,6}$', flags=re.IGNORECASE)
+
 class AttributeDict(dict):
 	"""
 	This class allows dictionary keys to be accessed as attributes. For
@@ -423,6 +425,17 @@ def grep(expression, file, flags=0, invert=False):
 			lines.append(line)
 	return lines
 
+def is_valid_email_address(email_address):
+	"""
+	Check that the string specified appears to be a valid email address.
+
+	:param str email_address: The email address to validate.
+	:return: Whether the email address appears to be valid or not.
+	:rtype: bool
+	"""
+	# requirements = re
+	return EMAIL_REGEX.match(email_address) != None
+
 def parse_case_camel_to_snake(string):
 	"""
 	Convert a string from CamelCase to snake_case.
@@ -549,7 +562,7 @@ def parse_to_slug(string, maxlen=24):
 
 def random_string_alphanumeric(size):
 	"""
-	Generate a random string of *size* length consisting of both letters
+	Generate a random string of *size* length consisting of mixed case letters
 	and numbers. This function is not meant for cryptographic purposes.
 
 	:param int size: The length of the string to return.
@@ -558,6 +571,18 @@ def random_string_alphanumeric(size):
 	"""
 	# requirements = random, string
 	return ''.join(random.choice(string.ascii_letters + string.digits) for x in range(size))
+
+def random_string_lower_numeric(size):
+	"""
+	Generate a random string of *size* length consisting of lowercase letters
+	and numbers. This function is not meant for cryptographic purposes.
+
+	:param int size: The length of the string to return.
+	:return: A string consisting of random characters.
+	:rtype: str
+	"""
+	# requirements = random, string
+	return ''.join(random.choice(string.ascii_lowercase + string.digits) for x in range(size))
 
 def selection_collision(selections, poolsize):
 	"""
