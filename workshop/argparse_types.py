@@ -39,8 +39,9 @@ from . import is_valid_email_address
 from . import parse_timespan
 
 class ArgpRegexType(object):
-	def __init__(self, regex):
+	def __init__(self, regex, error_message=None):
 		self.regex = regex
+		self.error_message = (error_message or "{arg} is not valid")
 
 	def __call__(self, arg):
 		if hasattr(self.regex, 'match'):
@@ -48,7 +49,7 @@ class ArgpRegexType(object):
 		else:
 			result = re.match(self.regex, arg)
 		if not result:
-			raise argparse.ArgumentTypeError("{0} is not a valid".format(repr(arg)))
+			raise argparse.ArgumentTypeError(self.error_message.format(arg=repr(arg)))
 		return arg
 
 def argp_bin_b64_type(arg):
