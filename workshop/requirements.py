@@ -51,7 +51,7 @@ def check_requirements(requirements, ignore=None):
 	"""
 	ignore = (ignore or [])
 	not_satisfied = []
-	installed_packages = dict(map(lambda p: (p.project_name, p), pkg_resources.working_set))
+	installed_packages = dict((p.project_name, p) for p in working_set)
 
 	if isinstance(requirements, str):
 		with open(requirements, 'r') as file_h:
@@ -60,9 +60,9 @@ def check_requirements(requirements, ignore=None):
 		requirements = requirements.readlines()
 	elif not isinstance(requirements, (list, tuple)):
 		raise TypeError('invalid type for argument requirements')
-	requirements = map(lambda req: req.strip(), requirements)
 
 	for req_line in requirements:
+		req_line = req_line.strip()
 		parts = re.match('^([\w\-]+)(([<>=]=)(\d+(\.\d+)*))?$', req_line)
 		if not parts:
 			raise ValueError("requirement '{0}' is in an invalid format".format(req_line))
@@ -77,10 +77,10 @@ def check_requirements(requirements, ignore=None):
 		req_version = distutils.version.StrictVersion(parts.group(4))
 		installed_pkg = installed_packages[req_pkg]
 		installed_version = distutils.version.StrictVersion(installed_pkg.version)
-		if parts.group(3) == '==' and not (installed_version == req_version):
+		if parts.group(3) == '==' and not installed_version == req_version:
 			not_satisfied.append(req_pkg)
-		elif parts.group(3) == '>=' and not (installed_version >= req_version):
+		elif parts.group(3) == '>=' and not installed_version >= req_version:
 			not_satisfied.append(req_pkg)
-		elif parts.group(3) == '<=' and not (installed_version <= req_version):
+		elif parts.group(3) == '<=' and not installed_version <= req_version:
 			not_satisfied.append(req_pkg)
 	return not_satisfied

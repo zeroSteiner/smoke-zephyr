@@ -181,7 +181,7 @@ class Cache(object):
 		"""
 		now = time.time()
 		keys_for_removal = []
-		for key, (value, expiration) in self.__cache.items():
+		for key, (_, expiration) in self.__cache.items():
 			if expiration < now:
 				keys_for_removal.append(key)
 		for key in keys_for_removal:
@@ -633,6 +633,8 @@ def unique(seq, key=None):
 	if key is None:
 		key = lambda x: x
 	preserved_type = type(seq)
+	if not preserved_type in (list, tuple):
+		raise TypeError("unique argument 1 must be list or tuple, not {0}".format(preserved_type.__name__))
 	seen = []
 	result = []
 	for item in seq:

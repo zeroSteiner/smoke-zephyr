@@ -219,7 +219,7 @@ class JobManager(object):
 		self._thread_shutdown.wait()
 		self._job_lock.acquire()
 		self.logger.debug('waiting on ' + str(len(self._jobs)) + ' job threads')
-		for job_id, job_desc in self._jobs.items():
+		for job_desc in self._jobs.values():
 			if job_desc['job'] == None:
 				continue
 			if not job_desc['job'].is_alive():
@@ -325,7 +325,11 @@ class JobManager(object):
 		:return: The number of jobs that are enabled.
 		:rtype: int
 		"""
-		return len(filter(lambda job_desc: job_desc['enabled'], self._jobs.values()))
+		enabled = 0
+		for job_desc in self._jobs.values():
+			if job_desc['enabled']:
+				enabled += 1
+		return enabled
 
 	def job_enable(self, job_id):
 		"""
