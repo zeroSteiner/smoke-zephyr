@@ -38,7 +38,8 @@ import re
 from . import is_valid_email_address
 from . import parse_timespan
 
-class ArgpRegexType(object):
+class RegexType(object):
+	"""An argparse type representing an arbitrary string which matches the specified regex."""
 	def __init__(self, regex, error_message=None):
 		self.regex = regex
 		self.error_message = (error_message or "{arg} is not valid")
@@ -52,31 +53,36 @@ class ArgpRegexType(object):
 			raise argparse.ArgumentTypeError(self.error_message.format(arg=repr(arg)))
 		return arg
 
-def argp_bin_b64_type(arg):
+def bin_b64_type(arg):
+	"""An argparse type representing binary data encoded in base64."""
 	try:
 		arg = base64.standard_b64decode(arg)
 	except (binascii.Error, TypeError):
 		raise argparse.ArgumentTypeError("{0} is not valid base64 data".format(repr(arg)))
 	return arg
 
-def argp_bin_hex_type(arg):
+def bin_hex_type(arg):
+	"""An argparse type representing binary data encoded in hex."""
 	try:
 		arg = binascii.a2b_hex(arg)
 	except (binascii.Error, TypeError):
 		raise argparse.ArgumentTypeError("{0} is not valid hex data".format(repr(arg)))
 	return arg
 
-def argp_dir_type(arg):
+def dir_type(arg):
+	"""An argparse type representing a valid directory."""
 	if not os.path.isdir(arg):
 		raise argparse.ArgumentTypeError("{0} is not a valid directory".format(repr(arg)))
 	return arg
 
-def argp_email_type(arg):
+def email_type(arg):
+	"""An argparse type representing an email address."""
 	if not is_valid_email_address(arg):
 		raise argparse.ArgumentTypeError("{0} is not a valid email address".format(repr(arg)))
 	return arg
 
-def argp_port_type(arg):
+def port_type(arg):
+	"""An argparse type representing a tcp or udp port number."""
 	if not arg.isdigit():
 		raise argparse.ArgumentTypeError("{0} is not a valid port".format(repr(arg)))
 	arg = int(arg)
@@ -84,7 +90,8 @@ def argp_port_type(arg):
 		raise argparse.ArgumentTypeError("{0} is not a valid port".format(repr(arg)))
 	return arg
 
-def argp_timespan_type(arg):
+def timespan_type(arg):
+	"""An argparse type representing a timespan such as 6h for 6 hours."""
 	try:
 		arg = parse_timespan(arg)
 	except ValueError:
