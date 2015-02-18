@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# workshop-python documentation build configuration file, created by
+# smoke-zephyr documentation build configuration file, created by
 # sphinx-quickstart on Wed May 21 09:18:54 2014.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -43,7 +43,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'workshop-python'
+project = u'smoke-zephyr'
 copyright = u'2014, Spencer McIntyre'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -167,7 +167,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'workshop-pythondoc'
+htmlhelp_basename = 'smoke-zephyr-doc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -186,7 +186,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'workshop-python.tex', u'workshop-python Documentation',
+  ('index', 'smoke-zephyr.tex', u'smoke-zephyr Documentation',
    u'Spencer McIntyre', 'manual'),
 ]
 
@@ -216,7 +216,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'workshop-python', u'workshop-python Documentation',
+    ('index', 'smoke-zephyr', u'smoke-zephyr Documentation',
      [u'Spencer McIntyre'], 1)
 ]
 
@@ -230,8 +230,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'workshop-python', u'workshop-python Documentation',
-   u'Spencer McIntyre', 'workshop-python', 'One line description of project.',
+  ('index', 'smoke-zephyr', u'smoke-zephyr Documentation',
+   u'Spencer McIntyre', 'smoke-zephyr', 'Python utility collection',
    'Miscellaneous'),
 ]
 
@@ -248,7 +248,7 @@ texinfo_documents = [
 # -- Options for Epub output ---------------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = u'workshop-python'
+epub_title = u'smoke-zephyr'
 epub_author = u'Spencer McIntyre'
 epub_publisher = u'Spencer McIntyre'
 epub_copyright = u'2014, Spencer McIntyre'

@@ -35,13 +35,13 @@
 
 from distutils.core import setup
 
-setup(name='Python Workshop',
+setup(name='smoke-zephyr',
 	version='1.0',
-	description='Python Workshop',
+	description='Python utility collection',
 	author='Spencer McIntyre',
 	author_email='zeroSteiner@gmail.com',
-	url='https://github.com/zeroSteiner/python-workshop',
-	packages=['workshop'],
+	url='https://github.com/zeroSteiner/smoke-zephyr',
+	packages=['smoke_zephyr'],
 	classifiers=[
 		'Intended Audience :: Developers',
 		'License :: OSI Approved :: BSD License',

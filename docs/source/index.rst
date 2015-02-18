@@ -1,13 +1,13 @@
-The workshop Package
-====================
+The smoke_zephyr Package
+========================
 
 .. toctree::
    :maxdepth: 4
 
-   workshop.rst
-   workshop.argparse_types.rst
-   workshop.configuration.rst
-   workshop.job.rst
+   smoke_zephyr.rst
+   smoke_zephyr.argparse_types.rst
+   smoke_zephyr.configuration.rst
+   smoke_zephyr.job.rst
 
 Indices and tables
 ==================
