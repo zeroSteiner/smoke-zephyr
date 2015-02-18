@@ -5,6 +5,7 @@ The workshop Package
    :maxdepth: 4
 
    workshop.rst
+   workshop.argparse_types.rst
    workshop.configuration.rst
    workshop.job.rst
 
