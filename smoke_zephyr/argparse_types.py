@@ -36,8 +36,8 @@ import logging
 import os
 import re
 
-from . import is_valid_email_address
-from . import parse_timespan
+from .utilities import is_valid_email_address
+from .utilities import parse_timespan
 
 class RegexType(object):
 	"""An argparse type representing an arbitrary string which matches the specified regex."""

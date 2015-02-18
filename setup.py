@@ -35,8 +35,10 @@
 
 from distutils.core import setup
 
+import smoke_zephyr
+
 setup(name='smoke-zephyr',
-	version='1.0',
+	version=smoke_zephyr.distutils_version,
 	description='Python utility collection',
 	author='Spencer McIntyre',
 	author_email='zeroSteiner@gmail.com',
