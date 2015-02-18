@@ -32,6 +32,7 @@
 
 import argparse
 import binascii
+import logging
 import os
 import re
 
@@ -80,6 +81,12 @@ def email_type(arg):
 	if not is_valid_email_address(arg):
 		raise argparse.ArgumentTypeError("{0} is not a valid email address".format(repr(arg)))
 	return arg
+
+def log_level_type(arg):
+	"""An argparse type representing a logging level."""
+	if not arg.upper() in ('NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'):
+		raise argparse.ArgumentTypeError("{0} is not a valid log level".format(repr(arg)))
+	return getattr(logging, arg.upper())
 
 def port_type(arg):
 	"""An argparse type representing a tcp or udp port number."""
