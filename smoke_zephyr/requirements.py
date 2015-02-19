@@ -51,6 +51,7 @@ def check_requirements(requirements, ignore=None):
 	"""
 	ignore = (ignore or [])
 	not_satisfied = []
+	working_set = pkg_resources.working_set
 	installed_packages = dict((p.project_name, p) for p in working_set)
 
 	if isinstance(requirements, str):
@@ -70,7 +71,12 @@ def check_requirements(requirements, ignore=None):
 		if req_pkg in ignore:
 			continue
 		if req_pkg not in installed_packages:
-			not_satisfied.append(req_pkg)
+			try:
+				find_result = working_set.find(pkg_resources.Requirement.parse(req_line))
+			except pkg_resources.ResolutionError:
+				find_result = False
+			if not find_result:
+				not_satisfied.append(req_pkg)
 			continue
 		if not parts.group(2):
 			continue
