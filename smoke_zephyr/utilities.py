@@ -475,17 +475,18 @@ def parse_server(server, default_port):
 	:return: The parsed server information.
 	:rtype: tuple
 	"""
-	server = server.split(':')
+	server = server.rsplit(':', 1)
 	host = server[0]
+	if host.startswith('[') and host.endswith(']'):
+		host = host[1:-1]
 	if len(server) == 1:
 		return (host, default_port)
+	port = server[1]
+	if not port:
+		port = default_port
 	else:
-		port = server[1]
-		if not port:
-			port = default_port
-		else:
-			port = int(port)
-		return (host, port)
+		port = int(port)
+	return (host, port)
 
 def parse_timespan(timedef):
 	"""
