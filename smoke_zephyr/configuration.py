@@ -48,6 +48,7 @@ else:
 		from yaml import Loader, Dumper
 
 SERIALIZER_DRIVERS = {}
+"""The serializer drivers that are available."""
 SERIALIZER_DRIVERS['json'] = {'load': json.load, 'dumps': lambda obj: json.dumps(obj, sort_keys=True, indent=4)}
 SERIALIZER_DRIVERS['jsn'] = {'load': json.load, 'dumps': lambda obj: json.dumps(obj, sort_keys=True, indent=4)}
 if has_yaml:

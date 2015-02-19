@@ -32,6 +32,7 @@
 
 import collections
 import functools
+import inspect
 import itertools
 import os
 import random
@@ -40,6 +41,7 @@ import shutil
 import string
 import sys
 import time
+import unittest
 
 if sys.version_info[0] < 3:
 	import urllib
@@ -358,6 +360,19 @@ class SectionConfigParser(object):
 		:param value: The value to set the option to.
 		"""
 		self.config_parser.set(self.section_name, option, value)
+
+class TestCase(unittest.TestCase):
+	"""
+	This class provides additional functionality over the built in
+	:py:class:`unittest.TestCase` object, including better compatibility for
+	methods across Python 2.x and Python 3.x.
+	"""
+	def __init__(self, *args, **kwargs):
+		super(TestCase, self).__init__(*args, **kwargs)
+		if not hasattr(self, 'assertRegex') and hasattr(self, 'assertRegexpMatches'):
+			self.assertRegex = self.assertRegexpMatches
+		if not hasattr(self, 'assertRaisesRegex') and hasattr(self, 'assertRaisesRegexp'):
+			self.assertRaisesRegex = self.assertRaisesRegexp
 
 def download(url, filename=None):
 	"""

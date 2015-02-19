@@ -61,3 +61,8 @@ Classes
    :members:
    :special-members: __init__
    :undoc-members:
+
+.. autoclass:: smoke_zephyr.utilities.TestCase
+   :members:
+   :show-inheritance:
+   :undoc-members:
