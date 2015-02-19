@@ -32,6 +32,7 @@
 
 import logging
 
+from .utilities import UtilitiesTests
 from .utilities import UtilitiesCacheTests
 
 if hasattr(logging, 'NullHandler'):

@@ -33,16 +33,17 @@
 import os
 import unittest
 
-from smoke_zephyr.utilities import Cache
-from smoke_zephyr.utilities import TestCase
-from smoke_zephyr.utilities import random_string_alphanumeric
+from smoke_zephyr import utilities
+
+SINGLE_QUOTE_STRING_ESCAPED = """C:\\\\Users\\\\Alice\\\\Desktop\\\\Alice\\\'s Secret File.txt"""
+SINGLE_QUOTE_STRING_UNESCAPED = """C:\\Users\\Alice\\Desktop\\Alice's Secret File.txt"""
 
 def cache_test(first_name, last_name, email=None, dob=None):
-	return random_string_alphanumeric(24)
+	return utilities.random_string_alphanumeric(24)
 
-class UtilitiesCacheTests(TestCase):
+class UtilitiesCacheTests(utilities.TestCase):
 	def test_cache(self):
-		target_function = Cache('6h')(cache_test)
+		target_function = utilities.Cache('6h')(cache_test)
 
 		result_alice = target_function('alice', 'liddle')
 		self.assertEqual(target_function('alice', 'liddle'), result_alice)
@@ -56,13 +57,13 @@ class UtilitiesCacheTests(TestCase):
 		self.assertNotEqual(result_alice, result_calie)
 
 	def test_cache_cache_clear(self):
-		target_function = Cache('6h')(cache_test)
+		target_function = utilities.Cache('6h')(cache_test)
 		result_alice = target_function('alice', 'liddle')
 		target_function.cache_clear()
 		self.assertNotEqual(target_function('alice', 'liddle'), result_alice)
 
 	def test_cache_flatten_args(self):
-		target_function = Cache('6h')(cache_test)
+		target_function = utilities.Cache('6h')(cache_test)
 		flatten_args = target_function._flatten_args
 		self.assertEqual(flatten_args(('alice',), {'last_name': 'liddle'}), ('alice', 'liddle', None, None))
 		self.assertEqual(flatten_args(('alice',), {'last_name': 'liddle', 'email': 'aliddle@wonderland.com'}), ('alice', 'liddle', 'aliddle@wonderland.com', None))
@@ -75,6 +76,61 @@ class UtilitiesCacheTests(TestCase):
 			flatten_args(('alice',), {})
 		with self.assertRaisesRegex(TypeError, r'^cache_test\(\) got an unexpected keyword argument \'foobar\'$'):
 			flatten_args(('alice', 'liddle'), {'foobar': True})
+
+class UtilitiesTests(utilities.TestCase):
+	def test_escape_single_quote(self):
+		escaped_string = utilities.escape_single_quote(SINGLE_QUOTE_STRING_UNESCAPED)
+		self.assertEqual(escaped_string, SINGLE_QUOTE_STRING_ESCAPED)
+
+	def test_is_valid_email_address(self):
+		valid_emails = [
+			'aliddle@wonderland.com',
+			'aliddle@wonderland.co.uk',
+			'alice.liddle1+spam@wonderland.com',
+		]
+		invalid_emails = [
+			'aliddle.wonderland.com'
+			'aliddle+',
+			'aliddle@',
+			'aliddle',
+			'',
+			'@wonderland.com',
+			'@wonder@land.com',
+			'aliddle@.com'
+		]
+		for address in valid_emails:
+			self.assertTrue(utilities.is_valid_email_address(address))
+		for address in invalid_emails:
+			self.assertFalse(utilities.is_valid_email_address(address))
+
+	def test_parse_server(self):
+		parsed = utilities.parse_server('127.0.0.1', 80)
+		self.assertIsInstance(parsed, tuple)
+		self.assertEqual(len(parsed), 2)
+		self.assertEqual(parsed[0], '127.0.0.1')
+		self.assertEqual(parsed[1], 80)
+		parsed = utilities.parse_server('127.0.0.1:8080', 80)
+		self.assertIsInstance(parsed, tuple)
+		self.assertEqual(len(parsed), 2)
+		self.assertEqual(parsed[0], '127.0.0.1')
+		self.assertEqual(parsed[1], 8080)
+		parsed = utilities.parse_server('[::1]:8080', 80)
+		self.assertIsInstance(parsed, tuple)
+		self.assertEqual(len(parsed), 2)
+		self.assertEqual(parsed[0], '::1')
+		self.assertEqual(parsed[1], 8080)
+
+	def test_parse_timespan(self):
+		self.assertRaises(ValueError, utilities.parse_timespan, 'fake')
+		self.assertEqual(utilities.parse_timespan(''), 0)
+		self.assertEqual(utilities.parse_timespan('30'), 30)
+		self.assertEqual(utilities.parse_timespan('1m30s'), 90)
+		self.assertEqual(utilities.parse_timespan('2h1m30s'), 7290)
+		self.assertEqual(utilities.parse_timespan('3d2h1m30s'), 266490)
+
+	def test_unescape_single_quote(self):
+		unescaped_string = utilities.unescape_single_quote(SINGLE_QUOTE_STRING_ESCAPED)
+		self.assertEqual(unescaped_string, SINGLE_QUOTE_STRING_UNESCAPED)
 
 if __name__ == '__main__':
 	unittest.main()
