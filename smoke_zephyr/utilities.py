@@ -614,11 +614,7 @@ def selection_collision(selections, poolsize):
 	# requirments = sys
 	probability = 100.0
 	poolsize = float(poolsize)
-	if sys.version_info[0] < 3:
-		_range = xrange
-	else:
-		_range = range
-	for i in _range(selections):
+	for i in range(selections):
 		probability = probability * (poolsize - i) / poolsize
 	probability = (100.0 - probability)
 	return probability

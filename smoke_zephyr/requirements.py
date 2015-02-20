@@ -30,7 +30,7 @@
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-import distutils.version
+import distutils.version # pylint: disable=E0611
 import re
 
 import pkg_resources
