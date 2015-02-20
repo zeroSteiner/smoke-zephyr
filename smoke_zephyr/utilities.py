@@ -548,7 +548,7 @@ def parse_timespan(timedef):
 def parse_to_slug(words, maxlen=24):
 	"""
 	Parse a string into a slug format suitable for use in URLs and other
-	character restricted applications. Only ascii strings are supported at this
+	character restricted applications. Only utf-8 strings are supported at this
 	time.
 
 	:param str words: The words to parse.
@@ -557,7 +557,6 @@ def parse_to_slug(words, maxlen=24):
 	:rtype: str
 	"""
 	slug = ''
-	words = unicode(words, 'utf-8', 'ignore')
 	maxlen = min(maxlen, len(words))
 	for i in range(len(words)):
 		if len(slug) == maxlen:

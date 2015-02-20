@@ -102,6 +102,16 @@ class UtilitiesTests(utilities.TestCase):
 		for address in invalid_emails:
 			self.assertFalse(utilities.is_valid_email_address(address))
 
+	def test_parse_case_camel_to_snake(self):
+		parsed = utilities.parse_case_camel_to_snake('SmokeZephyr')
+		self.assertEqual(parsed, 'smoke_zephyr')
+
+	def test_parse_case_snake_to_camel(self):
+		parsed = utilities.parse_case_snake_to_camel('smoke_zephyr')
+		self.assertEqual(parsed, 'SmokeZephyr')
+		parsed = utilities.parse_case_snake_to_camel('smoke_zephyr', False)
+		self.assertEqual(parsed, 'smokeZephyr')
+
 	def test_parse_server(self):
 		parsed = utilities.parse_server('127.0.0.1', 80)
 		self.assertIsInstance(parsed, tuple)
@@ -126,6 +136,12 @@ class UtilitiesTests(utilities.TestCase):
 		self.assertEqual(utilities.parse_timespan('1m30s'), 90)
 		self.assertEqual(utilities.parse_timespan('2h1m30s'), 7290)
 		self.assertEqual(utilities.parse_timespan('3d2h1m30s'), 266490)
+
+	def test_parse_to_slug(self):
+		parsed = utilities.parse_to_slug('Smoke Zephyr!')
+		self.assertEqual(parsed, 'smoke-zephyr')
+		parsed = utilities.parse_to_slug('_Smoke Zephyr! (Next Try)')
+		self.assertEqual(parsed, 'smoke-zephyr-next-try')
 
 	def test_unescape_single_quote(self):
 		unescaped_string = utilities.unescape_single_quote(SINGLE_QUOTE_STRING_ESCAPED)
