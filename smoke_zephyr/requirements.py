@@ -64,7 +64,7 @@ def check_requirements(requirements, ignore=None):
 
 	for req_line in requirements:
 		req_line = req_line.strip()
-		parts = re.match('^([\w\-]+)(([<>=]=)(\d+(\.\d+)*))?$', req_line)
+		parts = re.match(r'^([\w\-]+)(([<>=]=)(\d+(\.\d+)*))?$', req_line)
 		if not parts:
 			raise ValueError("requirement '{0}' is in an invalid format".format(req_line))
 		req_pkg = parts.group(1)

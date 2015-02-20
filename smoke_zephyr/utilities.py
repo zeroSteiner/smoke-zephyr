@@ -123,10 +123,12 @@ class Cache(object):
 		if isinstance(timeout, str):
 			timeout = parse_timespan(timeout)
 		self.cache_timeout = timeout
+		self._target_function = None
+		self._target_function_arg_spec = None
 		self.__cache = {}
 
 	def __call__(self, *args, **kwargs):
-		if not hasattr(self, '_target_function'):
+		if not getattr(self, '_target_function', False):
 			target_function = args[0]
 			if not inspect.isfunction(target_function) and not inspect.ismethod(target_function):
 				raise RuntimeError('the cached object must be a function or method')
@@ -135,7 +137,7 @@ class Cache(object):
 				raise RuntimeError('the cached function can not use dynamic args or kwargs')
 			self._target_function = target_function
 			self._target_function_arg_spec = arg_spec
-			return self
+			return functools.wraps(target_function)(self)
 
 		self.cache_clean()
 		args = self._flatten_args(args, kwargs)
@@ -173,7 +175,7 @@ class Cache(object):
 
 		unexpected_kwargs = tuple(kwargs.keys())
 		if len(unexpected_kwargs):
-			unexpected_kwargs = tuple(map(lambda a: "'{0}'".format(a), unexpected_kwargs))
+			unexpected_kwargs = tuple("'{0}'".format(a) for a in unexpected_kwargs)
 			raise TypeError("{0}() got an unexpected keyword argument{1} {2}".format(self._target_function.__name__, ('' if len(unexpected_kwargs) == 1 else 's'), ', '.join(unexpected_kwargs)))
 		return tuple(flattened_args)
 
@@ -391,17 +393,17 @@ def download(url, filename=None):
 	url_h.close()
 	return
 
-def escape_single_quote(string):
+def escape_single_quote(unescaped):
 	"""
 	Escape a string containing single quotes and backslashes with backslashes.
 	This is useful when a string is evaluated in some way.
 
-	:param str string: The string to escape.
+	:param str unescaped: The string to escape.
 	:return: The escaped string.
 	:rtype: str
 	"""
 	# requirements = re
-	return re.sub('(\'|\\\)', r'\\\1', string)
+	return re.sub(r'(\'|\\)', r'\\\1', unescaped)
 
 def format_bytes_size(val):
 	"""
@@ -451,33 +453,32 @@ def is_valid_email_address(email_address):
 	# requirements = re
 	return EMAIL_REGEX.match(email_address) != None
 
-def parse_case_camel_to_snake(string):
+def parse_case_camel_to_snake(camel):
 	"""
 	Convert a string from CamelCase to snake_case.
 
-	:param str string: The CamelCase string to convert.
+	:param str camel: The CamelCase string to convert.
 	:return: The snake_case version of string.
 	:rtype: str
 	"""
 	# requirements = re
-	return re.sub('((?<=[a-z0-9])[A-Z]|(?!^)[A-Z](?=[a-z]))', r'_\1', string).lower()
+	return re.sub('((?<=[a-z0-9])[A-Z]|(?!^)[A-Z](?=[a-z]))', r'_\1', camel).lower()
 
-def parse_case_snake_to_camel(string, upper_first=True):
+def parse_case_snake_to_camel(snake, upper_first=True):
 	"""
 	Convert a string from snake_case to CamelCase.
 
-	:param str string: The snake_case string to convert.
+	:param str snake: The snake_case string to convert.
 	:param bool upper_first: Whether or not to capitalize the first
 		character of the string.
 	:return: The CamelCase version of string.
 	:rtype: str
 	"""
-	string = string.split('_')
-	first_part = string[0]
+	snake = snake.split('_')
+	first_part = snake[0]
 	if upper_first:
 		first_part = first_part.title()
-	second_part = ''.join(map(lambda word: word.title(), string[1:]))
-	return first_part + second_part
+	return first_part + ''.join(word.title() for word in snake[1:])
 
 def parse_server(server, default_port):
 	"""
@@ -544,24 +545,24 @@ def parse_timespan(timedef):
 		raise ValueError('invalid time format')
 	return seconds
 
-def parse_to_slug(string, maxlen=24):
+def parse_to_slug(words, maxlen=24):
 	"""
 	Parse a string into a slug format suitable for use in URLs and other
-	character restricted applications. Only ascii strings are
-	supported at this time.
+	character restricted applications. Only ascii strings are supported at this
+	time.
 
-	:param str string: The string to parse.
+	:param str words: The words to parse.
 	:param int maxlen: The maximum length of the slug.
-	:return: The parsed string as a slug.
+	:return: The parsed words as a slug.
 	:rtype: str
 	"""
 	slug = ''
-	string = unicode(string, 'utf-8', 'ignore')
-	maxlen = min(maxlen, len(string))
-	for i in range(len(string)):
+	words = unicode(words, 'utf-8', 'ignore')
+	maxlen = min(maxlen, len(words))
+	for i in range(len(words)):
 		if len(slug) == maxlen:
 			break
-		c = ord(string[i])
+		c = ord(words[i])
 		if c == 0x27:
 			continue
 		elif c >= 0x30 and c <= 0x39:
@@ -623,17 +624,17 @@ def selection_collision(selections, poolsize):
 	probability = (100.0 - probability)
 	return probability
 
-def unescape_single_quote(string):
+def unescape_single_quote(escaped):
 	"""
 	Unescape a string which uses backslashes to escape single quotes.
 
-	:param str string: The string to unescape.
+	:param str escaped: The string to unescape.
 	:return: The unescaped string.
 	:rtype: str
 	"""
-	string = string.replace('\\\\', '\\')
-	string = string.replace('\\\'', '\'')
-	return string
+	escaped = escaped.replace('\\\\', '\\')
+	escaped = escaped.replace('\\\'', '\'')
+	return escaped
 
 def unique(seq, key=None):
 	"""

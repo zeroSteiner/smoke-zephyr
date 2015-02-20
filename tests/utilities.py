@@ -30,12 +30,11 @@
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-import os
 import unittest
 
 from smoke_zephyr import utilities
 
-SINGLE_QUOTE_STRING_ESCAPED = """C:\\\\Users\\\\Alice\\\\Desktop\\\\Alice\\\'s Secret File.txt"""
+SINGLE_QUOTE_STRING_ESCAPED = """C:\\\\Users\\\\Alice\\\\Desktop\\\\Alice\\'s Secret File.txt"""
 SINGLE_QUOTE_STRING_UNESCAPED = """C:\\Users\\Alice\\Desktop\\Alice's Secret File.txt"""
 
 def cache_test(first_name, last_name, email=None, dob=None):
@@ -64,7 +63,7 @@ class UtilitiesCacheTests(utilities.TestCase):
 
 	def test_cache_flatten_args(self):
 		target_function = utilities.Cache('6h')(cache_test)
-		flatten_args = target_function._flatten_args
+		flatten_args = target_function._flatten_args # pylint: disable=W0212
 		self.assertEqual(flatten_args(('alice',), {'last_name': 'liddle'}), ('alice', 'liddle', None, None))
 		self.assertEqual(flatten_args(('alice',), {'last_name': 'liddle', 'email': 'aliddle@wonderland.com'}), ('alice', 'liddle', 'aliddle@wonderland.com', None))
 		self.assertEqual(flatten_args(('alice', 'liddle'), {}), ('alice', 'liddle', None, None))

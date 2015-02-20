@@ -217,9 +217,9 @@ def main():
 	option_value = config.get(arguments.option)
 	if isinstance(option_value, list):
 		for value in option_value:
-			print(value)
+			print(value) # pylint: disable=C0325
 		return 0
-	print(option_value)
+	print(option_value) # pylint: disable=C0325
 	return 0
 
 if __name__ == '__main__':

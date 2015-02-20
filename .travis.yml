@@ -1,0 +1,14 @@
+language: python
+
+python:
+  - "2.7"
+  - "3.3"
+  - "3.4"
+
+install:
+  - pip install pylint sphinx
+
+script:
+  - pylint --rcfile .pylintrc smoke_zephyr
+  - python -m unittest -v tests
+  - sphinx-build docs/source docs/html
