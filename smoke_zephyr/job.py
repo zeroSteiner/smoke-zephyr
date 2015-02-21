@@ -36,7 +36,6 @@ import threading
 import time
 import uuid
 
-__version__ = '0.1'
 __all__ = ['JobManager', 'JobRequestDelete']
 
 def normalize_job_id(job_id):

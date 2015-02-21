@@ -33,6 +33,7 @@
 import logging
 
 from .argparse_types import ArgparseTypeTests
+from .job import JobManagerTests
 from .utilities import UtilitiesTests
 from .utilities import UtilitiesCacheTests
 
