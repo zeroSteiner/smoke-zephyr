@@ -32,6 +32,7 @@
 
 import logging
 
+from .argparse_types import ArgparseTypeTests
 from .utilities import UtilitiesTests
 from .utilities import UtilitiesCacheTests
 

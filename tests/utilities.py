@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#  tests/configuration.py
+#  tests/utilities.py
 #
 #  Redistribution and use in source and binary forms, with or without
 #  modification, are permitted provided that the following conditions are
@@ -77,6 +77,12 @@ class UtilitiesCacheTests(utilities.TestCase):
 			flatten_args(('alice', 'liddle'), {'foobar': True})
 
 class UtilitiesTests(utilities.TestCase):
+	def test_attribute_dict(self):
+		ad = utilities.AttributeDict(test=1)
+		self.assertIsInstance(ad, utilities.AttributeDict)
+		self.assertEqual(ad['test'], ad.test)
+		self.assertEqual(ad.test, 1)
+
 	def test_escape_single_quote(self):
 		escaped_string = utilities.escape_single_quote(SINGLE_QUOTE_STRING_UNESCAPED)
 		self.assertEqual(escaped_string, SINGLE_QUOTE_STRING_ESCAPED)
@@ -142,6 +148,10 @@ class UtilitiesTests(utilities.TestCase):
 		self.assertEqual(parsed, 'smoke-zephyr')
 		parsed = utilities.parse_to_slug('_Smoke Zephyr! (Next Try)')
 		self.assertEqual(parsed, 'smoke-zephyr-next-try')
+
+	def test_selection_collision(self):
+		chance = utilities.selection_collision(30, 365)
+		self.assertAlmostEqual(chance, 70.6316243)
 
 	def test_unescape_single_quote(self):
 		unescaped_string = utilities.unescape_single_quote(SINGLE_QUOTE_STRING_ESCAPED)
