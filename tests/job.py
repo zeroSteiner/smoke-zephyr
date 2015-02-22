@@ -43,6 +43,7 @@ def test_routine():
 	time.sleep(ROUTINE_SLEEP_TIME)
 
 def test_routine_delete():
+	time.sleep(ROUTINE_SLEEP_TIME)
 	return job.JobRequestDelete()
 
 class JobManagerTests(utilities.TestCase):
@@ -63,7 +64,7 @@ class JobManagerTests(utilities.TestCase):
 		self.assertEqual(self.jm.job_count_enabled(), 1)
 		yield jid
 		if wait:
-			time.sleep(3)
+			time.sleep(ROUTINE_SLEEP_TIME * 2)
 
 	def test_job_init(self):
 		self.assertEqual(self.jm.job_count(), 0)
@@ -103,7 +104,7 @@ class JobManagerTests(utilities.TestCase):
 		self.assertTrue(self.jm.job_is_running(jid))
 		self.assertEqual(self.jm.job_count(), 1)
 		self.assertEqual(self.jm.job_count_enabled(), 1)
-		time.sleep(ROUTINE_SLEEP_TIME)
+		time.sleep(ROUTINE_SLEEP_TIME * 2)
 
 		self.assertFalse(self.jm.job_is_running(jid))
 
