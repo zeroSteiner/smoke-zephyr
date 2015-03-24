@@ -82,9 +82,9 @@ class BruteforceGenerator(object):
 			self.endlen = endlen
 		if charset == None:
 			charset = list(map(chr, range(0, 256)))
-		elif type(charset) == str:
+		elif isinstance(charset, str):
 			charset = list(charset)
-		elif type(charset) == bytes:
+		elif isinstance(charset, bytes):
 			charset = list(map(chr, charset))
 		charset.sort()
 		self.charset = tuple(charset)
