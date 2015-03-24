@@ -371,8 +371,10 @@ class TestCase(unittest.TestCase):
 	"""
 	def __init__(self, *args, **kwargs):
 		super(TestCase, self).__init__(*args, **kwargs)
-		if not hasattr(self, 'assertRegexMatches') and hasattr(self, 'assertRegexpMatches'):
-			self.assertRegexMatches = self.assertRegexpMatches
+		if not hasattr(self, 'assertRegex') and hasattr(self, 'assertRegexpMatches'):
+			self.assertRegex = self.assertRegexpMatches
+		if not hasattr(self, 'assertNotRegex') and hasattr(self, 'assertNotRegexpMatches'):
+			self.assertNotRegex = self.assertNotRegexpMatches
 		if not hasattr(self, 'assertRaisesRegex') and hasattr(self, 'assertRaisesRegexp'):
 			self.assertRaisesRegex = self.assertRaisesRegexp
 
