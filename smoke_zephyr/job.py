@@ -207,7 +207,9 @@ class JobManager(object):
 		"""
 		if self._thread_running.is_set():
 			raise RuntimeError('the JobManager has already been started')
-		return self._thread.start()
+		self._thread.start()
+		self._thread_running.wait()
+		return
 
 	def stop(self):
 		"""
