@@ -82,7 +82,11 @@ def check_requirements(requirements, ignore=None):
 			continue
 		req_version = distutils.version.StrictVersion(parts.group(4))
 		installed_pkg = installed_packages[req_pkg]
-		installed_version = distutils.version.StrictVersion(installed_pkg.version)
+		installed_version = re.match(r'^((\d+\.)*\d+)', installed_pkg.version)
+		if not installed_version:
+			not_satisfied.append(req_pkg)
+			continue
+		installed_version = distutils.version.StrictVersion(installed_version.group(0))
 		if parts.group(3) == '==' and not installed_version == req_version:
 			not_satisfied.append(req_pkg)
 		elif parts.group(3) == '>=' and not installed_version >= req_version:
