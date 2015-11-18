@@ -92,9 +92,10 @@ class JobManager(object):
 	This class provides a threaded job manager for periodically executing
 	arbitrary functions in an asynchronous fashion.
 	"""
-	def __init__(self, use_utc=True):
+	def __init__(self, use_utc=True, logger_name=None):
 		"""
 		:param bool use_utc: Whether or not to use UTC time internally.
+		:param str logger_name: A specific name to use for the logger.
 		"""
 		self._thread = threading.Thread(target=self._run)
 		self._thread.daemon = True
@@ -104,7 +105,7 @@ class JobManager(object):
 		self._thread_shutdown.set()
 		self._job_lock = threading.RLock()
 		self.use_utc = use_utc
-		self.logger = logging.getLogger(self.__class__.__name__)
+		self.logger = logging.getLogger(logger_name or self.__class__.__name__)
 
 	def _job_execute(self, job_id):
 		self._job_lock.acquire()

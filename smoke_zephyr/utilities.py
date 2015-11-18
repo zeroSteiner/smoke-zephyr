@@ -509,13 +509,16 @@ def parse_server(server, default_port):
 def parse_timespan(timedef):
 	"""
 	Convert a string timespan definition to seconds, for example converting
-	'1m30s' to 90.
+	'1m30s' to 90. If *timedef* is already an int, the value will be returned
+	unmodified.
 
-	:param str timedef: The timespan definition to convert to seconds.
+	:param int, str timedef: The timespan definition to convert to seconds.
 	:return: The converted value in seconds.
 	:rtype: int
 	"""
-	converter_order = ['w', 'd', 'h', 'm', 's']
+	if isinstance(timedef, int):
+		return timedef
+	converter_order = ('w', 'd', 'h', 'm', 's')
 	converters = {
 		'w': 604800,
 		'd': 86400,
