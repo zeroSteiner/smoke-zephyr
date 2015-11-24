@@ -107,6 +107,9 @@ class JobManager(object):
 		self.use_utc = use_utc
 		self.logger = logging.getLogger(logger_name or self.__class__.__name__)
 
+	def __len__(self):
+		return self.job_count()
+
 	def _job_execute(self, job_id):
 		self._job_lock.acquire()
 		job_desc = self._jobs[job_id]

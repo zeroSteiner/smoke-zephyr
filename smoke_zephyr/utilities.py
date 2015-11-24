@@ -512,7 +512,8 @@ def parse_timespan(timedef):
 	'1m30s' to 90. If *timedef* is already an int, the value will be returned
 	unmodified.
 
-	:param int, str timedef: The timespan definition to convert to seconds.
+	:param timedef: The timespan definition to convert to seconds.
+	:type timedef: int, str
 	:return: The converted value in seconds.
 	:rtype: int
 	"""
@@ -692,7 +693,7 @@ def xfrange(start, stop=None, step=1):
 	:param step: Stepping size.
 	:type step: float, int, long
 	"""
-	if stop == None:
+	if stop is None:
 		stop = start
 		start = 0
 	start = float(start)
