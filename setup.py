@@ -41,11 +41,17 @@ setup(name='smoke-zephyr',
 	author='Spencer McIntyre',
 	author_email='zeroSteiner@gmail.com',
 	url='https://github.com/zeroSteiner/smoke-zephyr',
+	license='BSD',
 	packages=['smoke_zephyr'],
 	classifiers=[
+		'Development Status :: 5 - Production/Stable',
 		'Intended Audience :: Developers',
 		'License :: OSI Approved :: BSD License',
 		'Operating System :: POSIX',
-		'Programming Language :: Python'
+		'Programming Language :: Python',
+		'Programming Language :: Python :: 2.7',
+		'Programming Language :: Python :: 3.3',
+		'Programming Language :: Python :: 3.4',
+		'Programming Language :: Python :: 3.5',
 	]
 )
