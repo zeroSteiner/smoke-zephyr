@@ -76,11 +76,11 @@ class BruteforceGenerator(object):
 		:param charset: The characters to include in the resulting sequences.
 		"""
 		self.startlen = startlen
-		if endlen == None:
+		if endlen is None:
 			self.endlen = startlen
 		else:
 			self.endlen = endlen
-		if charset == None:
+		if charset is None:
 			charset = list(map(chr, range(0, 256)))
 		elif isinstance(charset, str):
 			charset = list(charset)
@@ -276,7 +276,7 @@ class SectionConfigParser(object):
 
 	def _get_raw(self, option, opt_type, default=None):
 		get_func = getattr(self.config_parser, 'get' + opt_type)
-		if default == None:
+		if default is None:
 			return get_func(self.section_name, option)
 		elif self.config_parser.has_option(self.section_name, option):
 			return get_func(self.section_name, option)
@@ -564,10 +564,10 @@ def parse_to_slug(words, maxlen=24):
 	"""
 	slug = ''
 	maxlen = min(maxlen, len(words))
-	for i in range(len(words)):
+	for c in words:
 		if len(slug) == maxlen:
 			break
-		c = ord(words[i])
+		c = ord(c)
 		if c == 0x27:
 			continue
 		elif c >= 0x30 and c <= 0x39:
@@ -651,7 +651,7 @@ def unique(seq, key=None):
 	if key is None:
 		key = lambda x: x
 	preserved_type = type(seq)
-	if not preserved_type in (list, tuple):
+	if preserved_type not in (list, tuple):
 		raise TypeError("unique argument 1 must be list or tuple, not {0}".format(preserved_type.__name__))
 	seen = []
 	result = []
@@ -695,7 +695,7 @@ def xfrange(start, stop=None, step=1):
 	"""
 	if stop is None:
 		stop = start
-		start = 0
+		start = 0.0
 	start = float(start)
 	while start < stop:
 		yield start

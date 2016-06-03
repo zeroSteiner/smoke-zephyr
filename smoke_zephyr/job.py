@@ -139,11 +139,11 @@ class JobManager(object):
 				if job_obj.is_alive() or job_obj.reaped:
 					continue
 				if job_obj.exception != None:
-					if job_desc['tolerate_exceptions'] == False:
+					if job_desc['tolerate_exceptions']:
+						self.logger.warning('job ' + str(job_id) + ' encountered exception: ' + job_obj.exception.__class__.__name__)
+					else:
 						self.logger.error('job ' + str(job_id) + ' encountered an error and is not set to tolerate exceptions')
 						jobs_for_removal.add(job_id)
-					else:
-						self.logger.warning('job ' + str(job_id) + ' encountered exception: ' + job_obj.exception.__class__.__name__)
 				if isinstance(job_desc['expiration'], int):
 					if job_desc['expiration'] <= 0:
 						jobs_for_removal.add(job_id)
@@ -225,7 +225,7 @@ class JobManager(object):
 		self._job_lock.acquire()
 		self.logger.debug('waiting on ' + str(len(self._jobs)) + ' job threads')
 		for job_desc in self._jobs.values():
-			if job_desc['job'] == None:
+			if job_desc['job'] is None:
 				continue
 			if not job_desc['job'].is_alive():
 				continue
@@ -410,7 +410,7 @@ class JobManager(object):
 		:rtype: bool
 		"""
 		job_id = normalize_job_id(job_id)
-		if not job_id in self._jobs:
+		if job_id not in self._jobs:
 			return False
 		job_desc = self._jobs[job_id]
 		if job_desc['job']:

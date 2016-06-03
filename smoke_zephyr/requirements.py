@@ -52,7 +52,7 @@ def check_requirements(requirements, ignore=None):
 	ignore = (ignore or [])
 	not_satisfied = []
 	working_set = pkg_resources.working_set
-	installed_packages = dict((p.project_name, p) for p in working_set)
+	installed_packages = dict((p.project_name, p) for p in working_set)  # pylint: disable=E1133
 
 	if isinstance(requirements, str):
 		with open(requirements, 'r') as file_h:
@@ -87,10 +87,10 @@ def check_requirements(requirements, ignore=None):
 			not_satisfied.append(req_pkg)
 			continue
 		installed_version = distutils.version.StrictVersion(installed_version.group(0))
-		if parts.group(3) == '==' and not installed_version == req_version:
+		if parts.group(3) == '==' and installed_version != req_version:
 			not_satisfied.append(req_pkg)
-		elif parts.group(3) == '>=' and not installed_version >= req_version:
+		elif parts.group(3) == '>=' and installed_version < req_version:
 			not_satisfied.append(req_pkg)
-		elif parts.group(3) == '<=' and not installed_version <= req_version:
+		elif parts.group(3) == '<=' and installed_version > req_version:
 			not_satisfied.append(req_pkg)
 	return not_satisfied
