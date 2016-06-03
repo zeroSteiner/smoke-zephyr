@@ -132,7 +132,7 @@ class Cache(object):
 			target_function = args[0]
 			if not inspect.isfunction(target_function) and not inspect.ismethod(target_function):
 				raise RuntimeError('the cached object must be a function or method')
-			arg_spec = inspect.getargspec(target_function)
+			arg_spec = inspect.getargspec(target_function)  # pylint: disable=W1505
 			if arg_spec.varargs or arg_spec.keywords:
 				raise RuntimeError('the cached function can not use dynamic args or kwargs')
 			self._target_function = target_function
