@@ -157,7 +157,7 @@ class Configuration(object):
 		item_names = option_name.split(self.seperator)
 		node = self._storage
 		for item_name in item_names:
-			if node == None:
+			if node is None:
 				return False
 			if not item_name in node:
 				return False
@@ -199,9 +199,8 @@ class Configuration(object):
 		"""
 		Save the current configuration to disk.
 		"""
-		file_h = open(self.configuration_file, 'wb')
-		file_h.write(self._serializer('dumps', self._storage))
-		file_h.close()
+		with open(self.configuration_file, 'w') as file_h:
+			file_h.write(self._serializer('dumps', self._storage))
 
 def main():
 	import argparse
