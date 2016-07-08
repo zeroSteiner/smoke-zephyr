@@ -7,6 +7,7 @@ The smoke_zephyr Package
    smoke_zephyr.rst
    smoke_zephyr.argparse_types.rst
    smoke_zephyr.configuration.rst
+   smoke_zephyr.memory_configuration.rst
    smoke_zephyr.job.rst
    smoke_zephyr.utilities.rst
 
