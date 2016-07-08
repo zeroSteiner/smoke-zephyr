@@ -49,44 +49,29 @@ else:
 
 SERIALIZER_DRIVERS = {}
 """The serializer drivers that are available."""
-SERIALIZER_DRIVERS['json'] = {'load': json.load,
-							'loads': json.loads,
-							'dumps': lambda obj: json.dumps(obj, sort_keys=True, indent=4)}
-SERIALIZER_DRIVERS['jsn'] = {'load': json.load,
-							'loads': json.loads,
-							'dumps': lambda obj: json.dumps(obj, sort_keys=True, indent=4)}
+SERIALIZER_DRIVERS['json'] = {'load': json.load, 'dumps': lambda obj: json.dumps(obj, sort_keys=True, indent=4)}
+SERIALIZER_DRIVERS['jsn'] = {'load': json.load, 'dumps': lambda obj: json.dumps(obj, sort_keys=True, indent=4)}
 if has_yaml:
-	SERIALIZER_DRIVERS['yaml'] = {'load': lambda file_obj: yaml.load(file_obj, Loader=Loader),
-								'loads': lambda file_obj: yaml.load(file_obj, Loader=Loader),
-								'dumps': lambda obj: yaml.dumps(obj, default_flow_style=False, Dumper=Dumper)}
-	SERIALIZER_DRIVERS['yml'] = {'load': lambda file_obj: yaml.load(file_obj, Loader=Loader),
-								'loads': lambda file_obj: yaml.load(file_obj, Loader=Loader),
-								'dumps': lambda obj: yaml.dumps(obj, default_flow_style=False, Dumper=Dumper)}
+	SERIALIZER_DRIVERS['yaml'] = {'load': lambda file_obj: yaml.load(file_obj, Loader=Loader), 'dumps': lambda obj: yaml.dumps(obj, default_flow_style=False, Dumper=Dumper)}
+	SERIALIZER_DRIVERS['yml'] = {'load': lambda file_obj: yaml.load(file_obj, Loader=Loader), 'dumps': lambda obj: yaml.dumps(obj, default_flow_style=False, Dumper=Dumper)}
 
 class MemoryConfiguration(object):
 	"""
 	This class provides a generic object for parsing information from variables in multiple formats.
 	"""
 
-	def __init__(self, mem_object, object_type, prefix=''):
+	def __init__(self, mem_object, prefix=''):
 		"""
 		:param str mem_object: The memory object to parse.
 		:param str prefix: String to be prefixed to all option names.
 		:param str object_type: String to identify how to parse the mem_object.
 		"""
-		self.prefix= prefix
+		self.prefix = prefix
 		self.seperator = '.'
-		self.object_type = object_type
 		if hasattr(mem_object, '__getitem__'):
 			self._storage = mem_object
 		else:
 			self._storage = dict(self._serializer('loads', mem_object))
-
-	def _serializer(self, operation, *args):
-		if not self.object_type in SERIALIZER_DRIVERS:
-			raise ValueError('unknown type \'' + self.object_type + '\'')
-		function = SERIALIZER_DRIVERS[self.object_type][operation]
-		return function(*args)
 
 	def get(self, item_name):
 		"""
@@ -125,28 +110,6 @@ class MemoryConfiguration(object):
 		:rtype: dict
 		"""
 		return copy.deepcopy(self._storage)
-
-	def get_missing(self, mem_object, object_type):
-		"""
-		Use a verification configuration which has a list of required options
-		and their respective types. This information is used to identify missing
-		and incompatible options in the loaded configuration.
-
-		:param str mem_object: The file to load for verification data.
-		:param str object_type: Type to parse the mem_object as.
-		:return: A dictionary of missing and incompatible settings.
-		:rtype: dict
-		"""
-		vconf = MemoryConfiguration(mem_object, object_type)
-		missing = {}
-		for setting, setting_type in vconf.get('settings').items():
-			if not self.has_option(setting):
-				missing['missing'] = missing.get('settings', [])
-				missing['missing'].append(setting)
-			elif not type(self.get(setting)).__name__ == setting_type:
-				missing['incompatible'] = missing.get('incompatible', [])
-				missing['incompatible'].append((setting, setting_type))
-		return missing
 
 	def has_option(self, option_name):
 		"""
@@ -209,11 +172,9 @@ class Configuration(MemoryConfiguration):
 		:param str configuration_file: The configuration file to parse.
 		:param str prefix: String to be prefixed to all option names.
 		"""
-		self.prefix = prefix
-		self.seperator = '.'
 		self.configuration_file = configuration_file
 		file_h = open(self.configuration_file, 'r')
-		self._storage = dict(self._serializer('load', file_h))
+		super(Configuration, self).__init__(dict(self._serializer('load', file_h)), prefix)
 		file_h.close()
 
 	@property
