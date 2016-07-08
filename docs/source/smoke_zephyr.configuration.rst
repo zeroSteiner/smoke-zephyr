@@ -19,3 +19,8 @@ Classes
    :members:
    :special-members: __init__
    :undoc-members:
+
+.. autoclass:: smoke_zephyr.configuration.MemoryConfiguration
+   :members:
+   :special-members: __init__
+   :undoc-members:
