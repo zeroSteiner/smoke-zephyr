@@ -57,21 +57,20 @@ if has_yaml:
 
 class MemoryConfiguration(object):
 	"""
-	This class provides a generic object for parsing information from variables in multiple formats.
+	This class provides an interface for retrieving values from deeply nested
+	objects supporting Python's __getitem__ interface.
 	"""
-
+	seperator = '.'
 	def __init__(self, mem_object, prefix=''):
 		"""
-		:param str mem_object: The memory object to parse.
+		:param smem_object: The memory object to parse.
 		:param str prefix: String to be prefixed to all option names.
 		:param str object_type: String to identify how to parse the mem_object.
 		"""
 		self.prefix = prefix
-		self.seperator = '.'
-		if hasattr(mem_object, '__getitem__'):
-			self._storage = mem_object
-		else:
-			self._storage = dict(self._serializer('loads', mem_object))
+		if not hasattr(mem_object, '__getitem__'):
+			raise ValueError('mem_object has no __getitem__ method')
+		self._storage = mem_object
 
 	def get(self, item_name):
 		"""
@@ -173,9 +172,9 @@ class Configuration(MemoryConfiguration):
 		:param str prefix: String to be prefixed to all option names.
 		"""
 		self.configuration_file = configuration_file
-		file_h = open(self.configuration_file, 'r')
-		super(Configuration, self).__init__(dict(self._serializer('load', file_h)), prefix)
-		file_h.close()
+		with open(self.configuration_file, 'r') as file_h:
+			mem_object = self._serializer('load', file_h)
+		super(Configuration, self).__init__(mem_object, prefix)
 
 	@property
 	def configuration_file_ext(self):
