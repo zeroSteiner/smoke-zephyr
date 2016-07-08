@@ -16,6 +16,13 @@ Classes
 -------
 
 .. autoclass:: smoke_zephyr.configuration.Configuration
+   :show-inheritance:
+   :members:
+   :special-members: __init__
+   :undoc-members:
+
+.. autoclass:: smoke_zephyr.configuration.MemoryConfiguration
+   :show-inheritance:
    :members:
    :special-members: __init__
    :undoc-members:

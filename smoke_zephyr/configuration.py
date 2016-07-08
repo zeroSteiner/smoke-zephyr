@@ -55,35 +55,22 @@ if has_yaml:
 	SERIALIZER_DRIVERS['yaml'] = {'load': lambda file_obj: yaml.load(file_obj, Loader=Loader), 'dumps': lambda obj: yaml.dumps(obj, default_flow_style=False, Dumper=Dumper)}
 	SERIALIZER_DRIVERS['yml'] = {'load': lambda file_obj: yaml.load(file_obj, Loader=Loader), 'dumps': lambda obj: yaml.dumps(obj, default_flow_style=False, Dumper=Dumper)}
 
-class Configuration(object):
+class MemoryConfiguration(object):
 	"""
-	This class provides a generic object for parsing configuration files
-	in multiple formats.
+	This class provides an interface for retrieving values from deeply nested
+	objects supporting Python's __getitem__ interface.
 	"""
-	def __init__(self, configuration_file, prefix=''):
+	seperator = '.'
+	def __init__(self, mem_object, prefix=''):
 		"""
-		:param str configuration_file: The configuration file to parse.
+		:param smem_object: The memory object to parse.
 		:param str prefix: String to be prefixed to all option names.
+		:param str object_type: String to identify how to parse the mem_object.
 		"""
 		self.prefix = prefix
-		self.seperator = '.'
-		self.configuration_file = configuration_file
-		file_h = open(self.configuration_file, 'r')
-		self._storage = dict(self._serializer('load', file_h))
-		file_h.close()
-
-	@property
-	def configuration_file_ext(self):
-		"""
-		The extension of the current configuration file.
-		"""
-		return os.path.splitext(self.configuration_file)[1][1:]
-
-	def _serializer(self, operation, *args):
-		if not self.configuration_file_ext in SERIALIZER_DRIVERS:
-			raise ValueError('unknown file type \'' + self.configuration_file_ext + '\'')
-		function = SERIALIZER_DRIVERS[self.configuration_file_ext][operation]
-		return function(*args)
+		if not hasattr(mem_object, '__getitem__'):
+			raise ValueError('mem_object has no __getitem__ method')
+		self._storage = mem_object
 
 	def get(self, item_name):
 		"""
@@ -122,27 +109,6 @@ class Configuration(object):
 		:rtype: dict
 		"""
 		return copy.deepcopy(self._storage)
-
-	def get_missing(self, verify_file):
-		"""
-		Use a verification configuration which has a list of required options
-		and their respective types. This information is used to identify missing
-		and incompatbile options in the loaded configuration.
-
-		:param str verify_file: The file to load for verification data.
-		:return: A dictionary of missing and incompatible settings.
-		:rtype: dict
-		"""
-		vconf = Configuration(verify_file)
-		missing = {}
-		for setting, setting_type in vconf.get('settings').items():
-			if not self.has_option(setting):
-				missing['missing'] = missing.get('settings', [])
-				missing['missing'].append(setting)
-			elif not type(self.get(setting)).__name__ == setting_type:
-				missing['incompatible'] = missing.get('incompatible', [])
-				missing['incompatible'].append((setting, setting_type))
-		return missing
 
 	def has_option(self, option_name):
 		"""
@@ -194,6 +160,55 @@ class Configuration(object):
 			node = node[item_name]
 		node[item_last] = item_value
 		return
+
+class Configuration(MemoryConfiguration):
+	"""
+	This class provides a generic object for parsing configuration files
+	in multiple formats.
+	"""
+	def __init__(self, configuration_file, prefix=''):
+		"""
+		:param str configuration_file: The configuration file to parse.
+		:param str prefix: String to be prefixed to all option names.
+		"""
+		self.configuration_file = configuration_file
+		with open(self.configuration_file, 'r') as file_h:
+			mem_object = self._serializer('load', file_h)
+		super(Configuration, self).__init__(mem_object, prefix)
+
+	@property
+	def configuration_file_ext(self):
+		"""
+		The extension of the current configuration file.
+		"""
+		return os.path.splitext(self.configuration_file)[1][1:]
+
+	def _serializer(self, operation, *args):
+		if not self.configuration_file_ext in SERIALIZER_DRIVERS:
+			raise ValueError('unknown file type \'' + self.configuration_file_ext + '\'')
+		function = SERIALIZER_DRIVERS[self.configuration_file_ext][operation]
+		return function(*args)
+
+	def get_missing(self, verify_file):
+		"""
+		Use a verification configuration which has a list of required options
+		and their respective types. This information is used to identify missing
+		and incompatible options in the loaded configuration.
+
+		:param str verify_file: The file to load for verification data.
+		:return: A dictionary of missing and incompatible settings.
+		:rtype: dict
+		"""
+		vconf = Configuration(verify_file)
+		missing = {}
+		for setting, setting_type in vconf.get('settings').items():
+			if not self.has_option(setting):
+				missing['missing'] = missing.get('settings', [])
+				missing['missing'].append(setting)
+			elif not type(self.get(setting)).__name__ == setting_type:
+				missing['incompatible'] = missing.get('incompatible', [])
+				missing['incompatible'].append((setting, setting_type))
+		return missing
 
 	def save(self):
 		"""
