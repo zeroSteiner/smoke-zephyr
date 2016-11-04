@@ -24,6 +24,11 @@ Functions
 Classes
 -------
 
+.. autoclass:: smoke_zephyr.argparse_types.IntRange
+   :members:
+   :special-members: __init__
+   :undoc-members:
+
 .. autoclass:: smoke_zephyr.argparse_types.RegexType
    :members:
    :special-members: __init__

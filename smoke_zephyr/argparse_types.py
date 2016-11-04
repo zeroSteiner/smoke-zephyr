@@ -31,6 +31,7 @@
 #
 
 import argparse
+import ast
 import base64
 import binascii
 import logging
@@ -44,7 +45,7 @@ class RegexType(object):
 	"""An argparse type representing an arbitrary string which matches the specified regex."""
 	def __init__(self, regex, error_message=None):
 		self.regex = regex
-		self.error_message = (error_message or "{arg} is not valid")
+		self.error_message = (error_message or "{arg} is invalid")
 
 	def __call__(self, arg):
 		if hasattr(self.regex, 'match'):
@@ -55,20 +56,43 @@ class RegexType(object):
 			raise argparse.ArgumentTypeError(self.error_message.format(arg=repr(arg)))
 		return arg
 
+class IntRange(object):
+	"""An argparse type representing an integer which must fall in a specified range."""
+	def __init__(self, stop, start=None):
+		self.start = (0 if start is None else start)
+		self.stop = (stop if start is None else start) - 1
+
+	def __call__(self, arg):
+		try:
+			arg = ast.literal_eval(arg)
+		except ValueError:
+			raise argparse.ArgumentTypeError("{arg} is invalid".format(arg=repr(arg)))
+		if not isinstance(arg, int):
+			raise argparse.ArgumentTypeError("{arg} is invalid".format(arg=repr(arg)))
+		if arg < self.start:
+			raise argparse.ArgumentTypeError("{arg} is invalid (low)".format(arg=repr(arg)))
+		if arg > self.stop:
+			raise argparse.ArgumentTypeError("{arg} is invalid (high)".format(arg=repr(arg)))
+		return arg
+
 def bin_b64_type(arg):
 	"""An argparse type representing binary data encoded in base64."""
 	try:
 		arg = base64.standard_b64decode(arg)
 	except (binascii.Error, TypeError):
-		raise argparse.ArgumentTypeError("{0} is not valid base64 data".format(repr(arg)))
+		raise argparse.ArgumentTypeError("{0} is invalid base64 data".format(repr(arg)))
 	return arg
 
 def bin_hex_type(arg):
 	"""An argparse type representing binary data encoded in hex."""
+	if re.match(r'^[a-f0-9]{2}(:[a-f0-9]{2})+$', arg, re.I):
+		arg = arg.replace(':', '')
+	elif re.match(r'^(\\x[a-f0-9]{2})+$', arg, re.I):
+		arg = arg.replace('\\x', '')
 	try:
 		arg = binascii.a2b_hex(arg)
 	except (binascii.Error, TypeError):
-		raise argparse.ArgumentTypeError("{0} is not valid hex data".format(repr(arg)))
+		raise argparse.ArgumentTypeError("{0} is invalid hex data".format(repr(arg)))
 	return arg
 
 def dir_type(arg):
@@ -91,11 +115,13 @@ def log_level_type(arg):
 
 def port_type(arg):
 	"""An argparse type representing a tcp or udp port number."""
-	if not arg.isdigit():
-		raise argparse.ArgumentTypeError("{0} is not a valid port".format(repr(arg)))
-	arg = int(arg)
+	error_msg = "{0} is not a valid port".format(repr(arg))
+	try:
+		arg = ast.literal_eval(arg)
+	except ValueError:
+		raise argparse.ArgumentTypeError(error_msg)
 	if arg < 0 or arg > 65535:
-		raise argparse.ArgumentTypeError("{0} is not a valid port".format(repr(arg)))
+		raise argparse.ArgumentTypeError(error_msg)
 	return arg
 
 def timespan_type(arg):
