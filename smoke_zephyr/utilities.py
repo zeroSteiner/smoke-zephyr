@@ -663,6 +663,37 @@ def unique(seq, key=None):
 		result.append(item)
 	return preserved_type(result)
 
+def weighted_choice(choices, weight):
+	"""
+	Make a random selection from the specified choices. Apply the *weight*
+	function to each to return a positive integer representing shares of
+	selection pool the choice should received. The *weight* function is passed a
+	single argument of the choice from the *choices* iterable.
+	
+	:param choices: The choices to select from.
+	:type choices: list, tuple
+	:param weight: The function used for gather weight information for choices.
+	:type weight: function
+	:return: A randomly selected choice from the provided *choices*.
+	"""
+	# requirements = random
+	weights = []
+	# get weight values for each of the choices
+	for choice in choices:
+		choice_weight = weight(choice)
+		if not (isinstance(choice_weight, int) and choice_weight > 0):
+			raise TypeError('weight results must be positive integers')
+		weights.append(choice_weight)
+
+	# make a selection within the acceptable range
+	selection = random.randint(0, sum(weights) - 1)
+
+	# find and return the corresponding choice
+	for idx, choice in enumerate(choices):
+		if selection < sum(weights[:idx + 1]):
+			return choice
+	raise RuntimeError('no selection could be made')
+
 def which(program):
 	"""
 	Locate an executable binary's full path by its name.

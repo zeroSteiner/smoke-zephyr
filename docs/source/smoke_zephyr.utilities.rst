@@ -31,6 +31,8 @@ Functions
 
 .. autofunction:: smoke_zephyr.utilities.unique
 
+.. autofunction:: smoke_zephyr.utilities.weighted_choice
+
 .. autofunction:: smoke_zephyr.utilities.which
 
 .. autofunction:: smoke_zephyr.utilities.xfrange
