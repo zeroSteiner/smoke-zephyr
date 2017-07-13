@@ -106,6 +106,7 @@ class JobManager(object):
 		self._job_lock = threading.RLock()
 		self.use_utc = use_utc
 		self.logger = logging.getLogger(logger_name or self.__class__.__name__)
+		self.exc_info = False
 
 	def __len__(self):
 		return self.job_count()
@@ -140,9 +141,9 @@ class JobManager(object):
 					continue
 				if job_obj.exception != None:
 					if job_desc['tolerate_exceptions']:
-						self.logger.warning('job ' + str(job_id) + ' encountered exception: ' + job_obj.exception.__class__.__name__)
+						self.logger.warning('job ' + str(job_id) + ' encountered exception: ' + job_obj.exception.__class__.__name__, exc_info=self.exc_info)
 					else:
-						self.logger.error('job ' + str(job_id) + ' encountered an error and is not set to tolerate exceptions')
+						self.logger.error('job ' + str(job_id) + ' encountered an error and is not set to tolerate exceptions', self.exc_info)
 						jobs_for_removal.add(job_id)
 				if isinstance(job_desc['expiration'], int):
 					if job_desc['expiration'] <= 0:
