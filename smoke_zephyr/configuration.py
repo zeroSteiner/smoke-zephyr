@@ -35,6 +35,11 @@ import json
 import os
 import sys
 
+if sys.version_info >= (3, 3, 0):
+	from collections.abc import Mapping as _Mapping
+else:
+	from collections import Mapping as _Mapping
+
 try:
 	import yaml
 except ImportError:
@@ -68,8 +73,8 @@ class MemoryConfiguration(object):
 		:param str object_type: String to identify how to parse the mem_object.
 		"""
 		self.prefix = prefix
-		if not hasattr(mem_object, '__getitem__'):
-			raise ValueError('mem_object has no __getitem__ method')
+		if not isinstance(mem_object, (dict, _Mapping)):
+			raise TypeError("mem_object does not inherit from dict or {0}.Mapping".format(_Mapping.__module__))
 		self._storage = mem_object
 
 	def get(self, item_name):
