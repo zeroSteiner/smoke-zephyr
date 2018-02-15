@@ -11,10 +11,11 @@ the [LICENSE](https://github.com/zeroSteiner/smoke-zephyr/blob/master/LICENSE)
 file.
 
 The following version of Python are currently supported:
- - Python 2.7
- - Python 3.3
- - Python 3.4
- - Python 3.5
+  - Python 2.7
+  - Python 3.3
+  - Python 3.4
+  - Python 3.5
+  - Python 3.6
 
 ## Code Documentation
 smoke-zephyr uses Sphinx for internal code documentation. This
