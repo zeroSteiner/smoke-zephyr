@@ -126,6 +126,11 @@ class Cache(object):
 		self._target_function = None
 		self._target_function_arg_spec = None
 		self.__cache = {}
+		self.__obj = None
+
+	def __get__(self, instance, _):
+		self.__obj = instance
+		return self
 
 	def __call__(self, *args, **kwargs):
 		if not getattr(self, '_target_function', False):
@@ -154,7 +159,10 @@ class Cache(object):
 		return "<cached function {0} at 0x{1:x}>".format(self._target_function.__name__, id(self._target_function))
 
 	def _flatten_args(self, args, kwargs):
-		flattened_args = list(args)
+		if self.__obj is not None:
+			args = (self.__obj,) + args
+			self.__obj = None
+		flattened_args = collections.deque(args)
 		arg_spec = self._target_function_arg_spec
 
 		arg_spec_defaults = (arg_spec.defaults or [])
@@ -166,16 +174,12 @@ class Cache(object):
 			if arg_name in default_args:
 				if not arg_name in kwargs:
 					raise TypeError("{0}() missing required argument '{1}'".format(self._target_function.__name__, arg_name))
-				flattened_args.append(kwargs[arg_name])
-				del kwargs[arg_name]
+				flattened_args.append(kwargs.pop(arg_name))
 			else:
-				flattened_args.append(kwargs.get(arg_name, default_kwargs[arg_name]))
-				if arg_name in kwargs:
-					del kwargs[arg_name]
+				flattened_args.append(kwargs.pop(arg_name, default_kwargs[arg_name]))
 
-		unexpected_kwargs = tuple(kwargs.keys())
-		if len(unexpected_kwargs):
-			unexpected_kwargs = tuple("'{0}'".format(a) for a in unexpected_kwargs)
+		if kwargs:
+			unexpected_kwargs = tuple("'{0}'".format(a) for a in kwargs.keys())
 			raise TypeError("{0}() got an unexpected keyword argument{1} {2}".format(self._target_function.__name__, ('' if len(unexpected_kwargs) == 1 else 's'), ', '.join(unexpected_kwargs)))
 		return tuple(flattened_args)
 
@@ -184,7 +188,7 @@ class Cache(object):
 		Remove expired items from the cache.
 		"""
 		now = time.time()
-		keys_for_removal = []
+		keys_for_removal = collections.deque()
 		for key, (_, expiration) in self.__cache.items():
 			if expiration < now:
 				keys_for_removal.append(key)
@@ -669,7 +673,7 @@ def weighted_choice(choices, weight):
 	function to each to return a positive integer representing shares of
 	selection pool the choice should received. The *weight* function is passed a
 	single argument of the choice from the *choices* iterable.
-	
+
 	:param choices: The choices to select from.
 	:type choices: list, tuple
 	:param weight: The function used for gather weight information for choices.
