@@ -42,6 +42,7 @@ import string
 import sys
 import time
 import unittest
+import weakref
 
 if sys.version_info[0] < 3:
 	import urllib
@@ -145,23 +146,33 @@ class Cache(object):
 			return functools.wraps(target_function)(self)
 
 		self.cache_clean()
+		if self.__obj is not None:
+			args = (self.__obj,) + args
+			self.__obj = None
+			is_method = True
+		else:
+			is_method = False
 		args = self._flatten_args(args, kwargs)
-		if not isinstance(args, collections.Hashable):
-			return self._target_function(*args)
-		result, expiration = self.__cache.get(args, (None, 0))
+		if is_method:
+			inst = args.popleft()
+			args = tuple(args)
+			ref = weakref.ref(inst, functools.partial(self._ref_callback, args))
+			cache_args = (ref,) + args
+			args = (inst,) + args
+		else:
+			cache_args = tuple(args)
+			args = tuple(args)
+		result, expiration = self.__cache.get(cache_args, (None, 0))
 		if expiration > time.time():
 			return result
 		result = self._target_function(*args)
-		self.__cache[args] = (result, time.time() + self.cache_timeout)
+		self.__cache[cache_args] = (result, time.time() + self.cache_timeout)
 		return result
 
 	def __repr__(self):
 		return "<cached function {0} at 0x{1:x}>".format(self._target_function.__name__, id(self._target_function))
 
 	def _flatten_args(self, args, kwargs):
-		if self.__obj is not None:
-			args = (self.__obj,) + args
-			self.__obj = None
 		flattened_args = collections.deque(args)
 		arg_spec = self._target_function_arg_spec
 
@@ -181,7 +192,11 @@ class Cache(object):
 		if kwargs:
 			unexpected_kwargs = tuple("'{0}'".format(a) for a in kwargs.keys())
 			raise TypeError("{0}() got an unexpected keyword argument{1} {2}".format(self._target_function.__name__, ('' if len(unexpected_kwargs) == 1 else 's'), ', '.join(unexpected_kwargs)))
-		return tuple(flattened_args)
+		return flattened_args
+
+	def _ref_callback(self, args, ref):
+		args = (ref,) + args
+		self.__cache.pop(args, None)
 
 	def cache_clean(self):
 		"""
