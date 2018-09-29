@@ -34,6 +34,7 @@ import collections
 import functools
 import inspect
 import itertools
+import logging
 import os
 import random
 import re
@@ -397,6 +398,40 @@ class TestCase(unittest.TestCase):
 		if not hasattr(self, 'assertRaisesRegex') and hasattr(self, 'assertRaisesRegexp'):
 			self.assertRaisesRegex = self.assertRaisesRegexp
 
+def configure_stream_logger(logger='', level=None, formatter='%(levelname)-8s %(message)s'):
+	"""
+	Configure the default stream handler for logging messages to the console,
+	remove other logging handlers, and enable capturing warnings.
+
+	:param str logger: The logger to add the stream handler for.
+	:param level: The level to set the logger to, will default to WARNING if no level is specified.
+	:type level: None, int, str
+	:param formatter: The format to use for logging messages to the console.
+	:type formatter: str, :py:class:`logging.Formatter`
+	:return: The new configured stream handler.
+	:rtype: :py:class:`logging.StreamHandler`
+	"""
+	level = level or logging.WARNING
+	if isinstance(level, str):
+		level = getattr(logging, level, None)
+		if level is None:
+			raise ValueError('invalid log level: ' + level)
+	root_logger = logging.getLogger('')
+	for handler in root_logger.handlers:
+		root_logger.removeHandler(handler)
+
+	logging.getLogger(logger).setLevel(logging.DEBUG)
+	console_log_handler = logging.StreamHandler()
+	console_log_handler.setLevel(level)
+	if isinstance(formatter, str):
+		formatter = logging.Formatter(formatter)
+	elif not isinstance(formatter, logging.Formatter):
+		raise TypeError('formatter must be an instance of logging.Formatter')
+	console_log_handler.setFormatter(formatter)
+	logging.getLogger(logger).addHandler(console_log_handler)
+	logging.captureWarnings(True)
+	return console_log_handler
+
 def download(url, filename=None):
 	"""
 	Download a file from a url and save it to disk.
@@ -428,7 +463,7 @@ def escape_single_quote(unescaped):
 
 def format_bytes_size(val):
 	"""
-	Take a number of bytes and convert it to a human readble number.
+	Take a number of bytes and convert it to a human readable number.
 
 	:param int val: The number of bytes to format.
 	:return: The size in a human readable format.

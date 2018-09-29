@@ -7,6 +7,8 @@
 Functions
 ---------
 
+.. autofunction:: configure_stream_logger
+
 .. autofunction:: download
 
 .. autofunction:: escape_single_quote
