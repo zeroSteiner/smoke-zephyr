@@ -1,5 +1,5 @@
-:mod:`smoke_zephyr.argparse_types` --- Extra argparse types
-===========================================================
+:mod:`argparse_types` --- Extra argparse types
+==============================================
 
 .. module:: smoke_zephyr.argparse_types
    :synopsis: Extra argparse types

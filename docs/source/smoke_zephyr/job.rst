@@ -1,5 +1,5 @@
-:mod:`smoke_zephyr.job` --- Asynchronous job manager
-====================================================
+:mod:`job` --- Asynchronous job manager
+=======================================
 
 .. module:: smoke_zephyr.job
    :synopsis: Asynchronous job manager

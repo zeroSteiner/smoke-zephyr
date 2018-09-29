@@ -1,5 +1,5 @@
-:mod:`smoke_zephyr.configuration` --- General configuration manager
-===================================================================
+:mod:`configuration` --- General configuration manager
+======================================================
 
 .. module:: smoke_zephyr.configuration
    :synopsis: General configuration manager
