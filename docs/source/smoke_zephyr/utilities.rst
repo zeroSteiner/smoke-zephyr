@@ -17,6 +17,8 @@ Functions
 
 .. autofunction:: grep
 
+.. autofunction:: open_uri
+
 .. autofunction:: parse_case_camel_to_snake
 
 .. autofunction:: parse_case_snake_to_camel

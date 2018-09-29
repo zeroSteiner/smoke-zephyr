@@ -40,6 +40,7 @@ import random
 import re
 import shutil
 import string
+import subprocess
 import sys
 import time
 import unittest
@@ -508,6 +509,37 @@ def is_valid_email_address(email_address):
 	"""
 	# requirements = re
 	return EMAIL_REGEX.match(email_address) != None
+
+def open_uri(uri):
+	"""
+	Open a URI in a platform intelligent way. On Windows this will use
+	'cmd.exe /c start' and on Linux this will use gvfs-open or xdg-open
+	depending on which is available. If no suitable application can be
+	found to open the URI, a RuntimeError will be raised.
+
+	:param str uri: The URI to open.
+	"""
+	close_fds = True
+	startupinfo = None
+	proc_args = []
+	if sys.platform.startswith('win'):
+		proc_args.append(which('cmd.exe'))
+		proc_args.append('/c')
+		proc_args.append('start')
+		uri = uri.replace('&', '^&')
+		close_fds = False
+		startupinfo = subprocess.STARTUPINFO()
+		startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+		startupinfo.wShowWindow = subprocess.SW_HIDE
+	elif which('gvfs-open'):
+		proc_args.append(which('gvfs-open'))
+	elif which('xdg-open'):
+		proc_args.append(which('xdg-open'))
+	else:
+		raise RuntimeError('could not find suitable application to open uri')
+	proc_args.append(uri)
+	proc_h = subprocess.Popen(proc_args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=close_fds, startupinfo=startupinfo)
+	return proc_h.wait() == 0
 
 def parse_case_camel_to_snake(camel):
 	"""
