@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  setup.py
@@ -31,15 +31,38 @@
 #
 #
 
-from distutils.core import setup
+import os
+import sys
 
-import smoke_zephyr
+base_directory = os.path.dirname(__file__)
 
-setup(name='smoke-zephyr',
-	version=smoke_zephyr.distutils_version,
-	description='Python utility collection',
+try:
+	from setuptools import setup, find_packages
+except ImportError:
+	print('This project needs setuptools in order to build. Install it using your package')
+	print('manager (usually python-setuptools) or via pip (pip install setuptools).')
+	sys.exit(1)
+
+try:
+	with open(os.path.join(base_directory, 'README.rst')) as file_h:
+		long_description = file_h.read()
+except OSError:
+	print('README.rst is unavailable, can not generate the long description', file=sys.stderr)
+	long_description = None
+
+DESCRIPTION = """\
+This project provides a collection of miscellaneous Python utilities.\
+"""
+
+setup(
+	name='smoke-zephyr',
+	version='1.3.1',
 	author='Spencer McIntyre',
 	author_email='zeroSteiner@gmail.com',
+	maintainer='Spencer McIntyre',
+	maintainer_email='zeroSteiner@gmail.com',
+	description=DESCRIPTION,
+	long_description=long_description,
 	url='https://github.com/zeroSteiner/smoke-zephyr',
 	license='BSD',
 	packages=['smoke_zephyr'],
