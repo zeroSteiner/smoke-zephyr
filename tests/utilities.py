@@ -30,6 +30,7 @@
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+import collections
 import unittest
 
 from smoke_zephyr import utilities
@@ -63,13 +64,31 @@ class UtilitiesCacheTests(utilities.TestCase):
 
 	def test_cache_flatten_args(self):
 		target_function = utilities.Cache('6h')(cache_test)
-		flatten_args = target_function._flatten_args # pylint: disable=W0212
-		self.assertEqual(flatten_args(('alice',), {'last_name': 'liddle'}), ('alice', 'liddle', None, None))
-		self.assertEqual(flatten_args(('alice',), {'last_name': 'liddle', 'email': 'aliddle@wonderland.com'}), ('alice', 'liddle', 'aliddle@wonderland.com', None))
-		self.assertEqual(flatten_args(('alice', 'liddle'), {}), ('alice', 'liddle', None, None))
-		self.assertEqual(flatten_args(('alice', 'liddle'), {}), ('alice', 'liddle', None, None))
-		self.assertEqual(flatten_args(('alice', 'liddle', 'aliddle@wonderland.com'), {}), ('alice', 'liddle', 'aliddle@wonderland.com', None))
-		self.assertEqual(flatten_args(('alice', 'liddle'), {'dob': '1990'}), ('alice', 'liddle', None, '1990'))
+		flatten_args = target_function._flatten_args  # pylint: disable=W0212
+		self.assertEqual(
+			flatten_args(('alice',), {'last_name': 'liddle'}),
+			collections.deque(('alice', 'liddle', None, None))
+		)
+		self.assertEqual(
+			flatten_args(('alice',), {'last_name': 'liddle', 'email': 'aliddle@wonderland.com'}),
+			collections.deque(('alice', 'liddle', 'aliddle@wonderland.com', None))
+		)
+		self.assertEqual(
+			flatten_args(('alice', 'liddle'), {}),
+			collections.deque(('alice', 'liddle', None, None))
+		)
+		self.assertEqual(
+			flatten_args(('alice', 'liddle'), {}),
+			collections.deque(('alice', 'liddle', None, None))
+		)
+		self.assertEqual(
+			flatten_args(('alice', 'liddle', 'aliddle@wonderland.com'), {}),
+			collections.deque(('alice', 'liddle', 'aliddle@wonderland.com', None))
+		)
+		self.assertEqual(
+			flatten_args(('alice', 'liddle'), {'dob': '1990'}),
+			collections.deque(('alice', 'liddle', None, '1990'))
+		)
 
 		with self.assertRaisesRegex(TypeError, r'^cache_test\(\) missing required argument \'last_name\'$'):
 			flatten_args(('alice',), {})
