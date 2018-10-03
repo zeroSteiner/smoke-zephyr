@@ -404,6 +404,8 @@ def configure_stream_logger(logger='', level=None, formatter='%(levelname)-8s %(
 	Configure the default stream handler for logging messages to the console,
 	remove other logging handlers, and enable capturing warnings.
 
+	.. versionadded:: 1.3.0
+
 	:param str logger: The logger to add the stream handler for.
 	:param level: The level to set the logger to, will default to WARNING if no level is specified.
 	:type level: None, int, str
@@ -516,6 +518,8 @@ def open_uri(uri):
 	'cmd.exe /c start' and on Linux this will use gvfs-open or xdg-open
 	depending on which is available. If no suitable application can be
 	found to open the URI, a RuntimeError will be raised.
+
+	.. versionadded:: 1.3.0
 
 	:param str uri: The URI to open.
 	"""
