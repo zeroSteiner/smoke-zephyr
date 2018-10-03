@@ -46,7 +46,7 @@ except ImportError:
 try:
 	with open(os.path.join(base_directory, 'README.rst')) as file_h:
 		long_description = file_h.read()
-except IOError, OSError:
+except (IOError, OSError):
 	sys.stderr.write('README.rst is unavailable, can not generate the long description\n')
 	long_description = None
 
