@@ -9,4 +9,5 @@ build/*
 dist/*
 docs/build
 docs/html
+smoke_zephyr.egg-info/*
 MANIFEST
