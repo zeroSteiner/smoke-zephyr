@@ -38,12 +38,11 @@ import uuid
 from smoke_zephyr import job
 from smoke_zephyr import utilities
 
-ROUTINE_SLEEP_TIME = 2.0
+ROUTINE_SLEEP_TIME = 1.5
 def test_routine():
 	time.sleep(ROUTINE_SLEEP_TIME)
 
 def test_routine_delete():
-	time.sleep(ROUTINE_SLEEP_TIME)
 	return job.JobRequestDelete()
 
 class JobManagerTests(utilities.TestCase):
@@ -94,7 +93,8 @@ class JobManagerTests(utilities.TestCase):
 	def test_job_request_delete(self):
 		with self._job_add(test_routine_delete) as jid:
 			self.assertTrue(self.jm.job_exists(jid))
-		self.assertFalse(self.jm.job_exists(jid))
+		result = self.jm.job_exists(jid)
+		self.assertFalse(result)
 		self.assertEqual(self.jm.job_count(), 0)
 		self.assertEqual(self.jm.job_count_enabled(), 0)
 
