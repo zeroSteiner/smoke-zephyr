@@ -288,21 +288,17 @@ class FileWalker(object):
 				depth = os.path.relpath(root, start=self.filespath).count(os.path.sep) + 1
 			if depth >= self.max_depth:
 				continue
-			for cur_dir in dirs:
-				cur_dir = os.path.join(root, cur_dir)
-				if not self._skip(cur_dir):
-					yield cur_dir
-			for cur_file in files:
-				cur_file = os.path.join(root, cur_file)
-				if not self._skip(cur_file):
-					yield cur_file
-
+			for entry in itertools.chain(dirs, files):
+				current_path = os.path.join(root, entry)
+				if not self._skip(current_path):
+					yield current_path
 		if self.max_depth >= 0 and not self._skip(self.filespath):
 			yield self.filespath
 
 	def _next_file(self):
 		if self.max_depth >= 0 and not self._skip(self.filespath):
 			yield self.filespath
+
 class SectionConfigParser(object):
 	"""
 	Proxy access to a section of a ConfigParser object.
