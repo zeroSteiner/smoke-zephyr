@@ -283,26 +283,26 @@ class FileWalker(object):
 	def _next_dir(self):
 		for root, dirs, files in os.walk(self.filespath, followlinks=self.follow_links):
 			if root == self.filespath:
-				depth = 1
+				depth = 0
 			else:
 				depth = os.path.relpath(root, start=self.filespath).count(os.path.sep) + 1
-			if depth > self.max_depth:
+			if depth >= self.max_depth:
 				continue
-			for cur_file in files:
-				cur_file = os.path.join(root, cur_file)
-				if not self._skip(cur_file):
-					yield cur_file
 			for cur_dir in dirs:
 				cur_dir = os.path.join(root, cur_dir)
 				if not self._skip(cur_dir):
 					yield cur_dir
-			if self.max_depth >= 0 and not self._skip(self.filespath):
-				yield self.filespath
+			for cur_file in files:
+				cur_file = os.path.join(root, cur_file)
+				if not self._skip(cur_file):
+					yield cur_file
+
+		if self.max_depth >= 0 and not self._skip(self.filespath):
+			yield self.filespath
 
 	def _next_file(self):
 		if self.max_depth >= 0 and not self._skip(self.filespath):
 			yield self.filespath
-
 class SectionConfigParser(object):
 	"""
 	Proxy access to a section of a ConfigParser object.
