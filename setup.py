@@ -56,7 +56,7 @@ This project provides a collection of miscellaneous Python utilities.\
 
 setup(
 	name='smoke-zephyr',
-	version='1.3.5',
+	version='1.4.0',
 	author='Spencer McIntyre',
 	author_email='zeroSteiner@gmail.com',
 	maintainer='Spencer McIntyre',
