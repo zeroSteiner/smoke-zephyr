@@ -220,21 +220,22 @@ class Cache(object):
 
 class FileWalker:
 	"""
-	This class is used to easily iterate over files in a directory.
+	This class is used to easily iterate over files and subdirecotries of a
+	specified parent directory.
 	"""
 	def __init__(self, filespath, absolute_path=False, skip_files=False, skip_dirs=False, filter_func=None):
 		"""
 		:param str filespath: A path to either a file or a directory. If
 			a file is passed then that will be the only file returned
-			during the iteration. If a directory is passed, all files
-			will be recursively returned during the iteration.
+			during the iteration. If a directory is passed, all files and
+			subdirectories will be recursively returned during the iteration.
 		:param bool absolute_path: Whether or not the absolute path or a
 			relative path should be returned.
 		:param bool skip_files: Whether or not to skip files.
 		:param bool skip_dirs: Whether or not to skip directories.
-		:param function filter_func: If defined, the filter_func function
-			will be called for each file and if the function returns false
-			the file will be skipped.
+		:param function filter_func: If defined, the filter_func function will
+			be called for each path (with the path as the one and only argument)
+			and if the function returns false the path will be skipped.
 		"""
 		if not (os.path.isfile(filespath) or os.path.isdir(filespath)):
 			raise Exception(filespath + ' is neither a file or directory')
@@ -259,7 +260,7 @@ class FileWalker:
 			return True
 		if self.skip_dirs and os.path.isdir(cur_file):
 			return True
-		if self.filter_func != None:
+		if self.filter_func is not None:
 			if not self.filter_func(cur_file):
 				return True
 		return False
