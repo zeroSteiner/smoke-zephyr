@@ -46,7 +46,7 @@ import time
 import unittest
 import weakref
 
-if sys.version_info[0] < 3:
+if sys.version_info < (3, 0):
 	import urllib
 	import urlparse
 	urllib.parse = urlparse
@@ -54,8 +54,6 @@ if sys.version_info[0] < 3:
 else:
 	import urllib.parse
 	import urllib.request
-
-__version__ = '0.1'
 
 EMAIL_REGEX = re.compile(r'^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,6}$', flags=re.IGNORECASE)
 
@@ -218,13 +216,16 @@ class Cache(object):
 		"""
 		self.__cache = {}
 
-class FileWalker:
+class FileWalker(object):
 	"""
-	This class is used to easily iterate over files and subdirecotries of a
+	This class is used to easily iterate over files and subdirectories of a
 	specified parent directory.
 	"""
-	def __init__(self, filespath, absolute_path=False, skip_files=False, skip_dirs=False, filter_func=None):
+	def __init__(self, filespath, absolute_path=False, skip_files=False, skip_dirs=False, filter_func=None, follow_links=False, max_depth=None):
 		"""
+		.. versionchanged:: 1.4.0
+			Added the *follow_links* and *max_depth* parameters.
+
 		:param str filespath: A path to either a file or a directory. If
 			a file is passed then that will be the only file returned
 			during the iteration. If a directory is passed, all files and
@@ -236,6 +237,9 @@ class FileWalker:
 		:param function filter_func: If defined, the filter_func function will
 			be called for each path (with the path as the one and only argument)
 			and if the function returns false the path will be skipped.
+		:param bool follow_links: Whether or not to follow directories pointed
+			to by symlinks.
+		:param max_depth: A maximum depth to recurse into.
 		"""
 		if not (os.path.isfile(filespath) or os.path.isdir(filespath)):
 			raise Exception(filespath + ' is neither a file or directory')
@@ -246,6 +250,8 @@ class FileWalker:
 		self.skip_files = skip_files
 		self.skip_dirs = skip_dirs
 		self.filter_func = filter_func
+		self.follow_links = follow_links
+		self.max_depth = float('inf') if max_depth is None else max_depth
 		if os.path.isdir(self.filespath):
 			self._walk = None
 			self._next = self._next_dir
@@ -266,7 +272,13 @@ class FileWalker:
 		return False
 
 	def _next_dir(self):
-		for root, dirs, files in os.walk(self.filespath):
+		for root, dirs, files in os.walk(self.filespath, followlinks=self.follow_links):
+			if root == self.filespath:
+				depth = 1
+			else:
+				depth = os.path.relpath(root, start=self.filespath).count(os.path.sep) + 1
+			if depth > self.max_depth:
+				continue
 			for cur_file in files:
 				cur_file = os.path.join(root, cur_file)
 				if not self._skip(cur_file):
@@ -275,12 +287,12 @@ class FileWalker:
 				cur_dir = os.path.join(root, cur_dir)
 				if not self._skip(cur_dir):
 					yield cur_dir
-		raise StopIteration
+			if self.max_depth >= 0 and not self._skip(self.filespath):
+				yield self.filespath
 
 	def _next_file(self):
-		if not self._skip(self.filespath):
+		if self.max_depth >= 0 and not self._skip(self.filespath):
 			yield self.filespath
-		raise StopIteration
 
 class SectionConfigParser(object):
 	"""
