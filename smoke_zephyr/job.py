@@ -139,7 +139,7 @@ class JobManager(object):
 				job_obj = job_desc['job']
 				if job_obj.is_alive() or job_obj.reaped:
 					continue
-				if job_obj.exception != None:
+				if job_obj.exception is not None:
 					if job_desc['tolerate_exceptions']:
 						self.logger.warning('job ' + str(job_id) + ' encountered exception: ' + job_obj.exception.__class__.__name__, exc_info=self.exc_info)
 					else:
@@ -161,7 +161,7 @@ class JobManager(object):
 
 			# sow jobs
 			for job_id, job_desc in self._jobs.items():
-				if job_desc['last_run'] != None and self.now_is_before(job_desc['last_run'] + job_desc['run_every']):
+				if job_desc['last_run'] is not None and self.now_is_before(job_desc['last_run'] + job_desc['run_every']):
 					continue
 				if job_desc['job'].is_alive():
 					continue
@@ -231,8 +231,12 @@ class JobManager(object):
 			if not job_desc['job'].is_alive():
 				continue
 			job_desc['job'].join()
-		self._thread.join()
+
+		# the job lock must be released before the thread can be joined because the thread routine acquires it before
+		# checking if it should exit, see https://github.com/zeroSteiner/smoke-zephyr/issues/4 for more details
 		self._job_lock.release()
+		self._thread.join()
+
 		self.logger.info('the job manager has been stopped')
 		return
 
