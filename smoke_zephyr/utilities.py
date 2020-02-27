@@ -530,6 +530,24 @@ def is_valid_email_address(email_address):
 	# requirements = re
 	return EMAIL_REGEX.match(email_address) != None
 
+def get_ip_list(ip_network, mask=None):
+	"""
+	Quickly convert an IPv4 or IPv6 network (CIDR or Subnet) to a list
+	of individual IPs in their string representation.
+
+	:param str ip_network:
+	:param str mask:
+	:return: list
+	"""
+	if mask and '/' not in ip_network:
+		net = ipaddress.ip_network("{0}/{1}".format(ip_network, mask))
+		return [host.__str__() for host in net.hosts()]
+	elif '/' not in ip_network:
+		return [str(ipaddress.ip_address(ip_network))]
+	else:
+		net = ipaddress.ip_network(ip_network)
+		return [host.__str__() for host in net.hosts()]
+
 def open_uri(uri):
 	"""
 	Open a URI in a platform intelligent way. On Windows this will use
