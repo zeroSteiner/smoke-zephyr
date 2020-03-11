@@ -33,7 +33,6 @@
 import collections
 import functools
 import inspect
-import ipaddress
 import itertools
 import logging
 import os
@@ -50,11 +49,13 @@ import weakref
 if sys.version_info < (3, 0):
 	import urllib
 	import urlparse
+	import netaddr
 	urllib.parse = urlparse
 	urllib.request = urllib
 	_its_pyv2 = True
 	_its_pyv3 = False
 else:
+	import ipaddress
 	import urllib.parse
 	import urllib.request
 	_its_pyv2 = False
@@ -540,14 +541,25 @@ def get_ip_list(ip_network, mask=None):
 	:param str mask:
 	:return: list
 	"""
-	if mask and '/' not in ip_network:
-		net = ipaddress.ip_network("{0}/{1}".format(ip_network, mask))
-		return [host.__str__() for host in net.hosts()]
-	elif '/' not in ip_network:
-		return [str(ipaddress.ip_address(ip_network))]
-	else:
-		net = ipaddress.ip_network(ip_network)
-		return [host.__str__() for host in net.hosts()]
+	if _its_pyv3:
+		if mask and '/' not in ip_network:
+			net = ipaddress.ip_network("{0}/{1}".format(ip_network, mask))
+			return [host.__str__() for host in net.hosts()]
+		elif '/' not in ip_network:
+			return [str(ipaddress.ip_address(ip_network))]
+		else:
+			net = ipaddress.ip_network(ip_network)
+			return [host.__str__() for host in net.hosts()]
+	elif _its_pyv2:
+		if mask and '/' not in ip_network:
+			net = netaddr.IPNetwork("{0}/{1}".format(ip_network, mask))
+			return [host.__str__() for host in net.iter_hosts()]
+		elif '/' not in ip_network:
+			return [str(netaddr.IPAddress(ip_network))]
+		else:
+			net = netaddr.IPNetwork(ip_network)
+			return [host.__str__() for host in net.iter_hosts()]
+
 
 def open_uri(uri):
 	"""
