@@ -106,6 +106,18 @@ class UtilitiesTests(utilities.TestCase):
 		escaped_string = utilities.escape_single_quote(SINGLE_QUOTE_STRING_UNESCAPED)
 		self.assertEqual(escaped_string, SINGLE_QUOTE_STRING_ESCAPED)
 
+	def test_get_ip_list(self):
+		cases = {
+			('192.168.1.0', None): ['192.168.1.0'],
+			('192.168.1.0/32', None): [],
+			('192.168.1.0/30', None): ['192.168.1.1', '192.168.1.2'],
+			('192.168.1.0', 32): [],
+			('192.168.1.0', 30): ['192.168.1.1', '192.168.1.2'],
+		}
+		for (ip_network, mask), ip_list in cases.items():
+			returned_ip_list = utilities.get_ip_list(ip_network, mask=mask)
+			self.assertEquals(returned_ip_list, ip_list, msg=("get_ip_list({!r}, mask={!r}) != {!r}".format(ip_network, mask, ip_list)))
+
 	def test_is_valid_email_address(self):
 		valid_emails = [
 			'aliddle@wonderland.com',
@@ -171,6 +183,15 @@ class UtilitiesTests(utilities.TestCase):
 	def test_selection_collision(self):
 		chance = utilities.selection_collision(30, 365)
 		self.assertAlmostEqual(chance, 70.6316243)
+
+	def test_sort_ipv4_list(self):
+		cases = [
+			(['9.8.7.6', '1.2.3.4'], ['1.2.3.4', '9.8.7.6']),
+			(['11.22.33.44', '2.3.4.5'], ['2.3.4.5', '11.22.33.44']),
+		]
+		for in_list, out_list in cases:
+			self.assertEquals(utilities.sort_ipv4_list(in_list), out_list)
+		self.assertEquals(utilities.sort_ipv4_list(['1.2.3.4', '1.2.3.4'], unique=True), ['1.2.3.4'])
 
 	def test_unescape_single_quote(self):
 		unescaped_string = utilities.unescape_single_quote(SINGLE_QUOTE_STRING_ESCAPED)

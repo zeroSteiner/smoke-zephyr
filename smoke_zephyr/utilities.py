@@ -49,7 +49,6 @@ import weakref
 if sys.version_info < (3, 0):
 	import urllib
 	import urlparse
-	import netaddr
 	urllib.parse = urlparse
 	urllib.request = urllib
 	_its_pyv2 = True
@@ -538,32 +537,23 @@ def get_ip_list(ip_network, mask=None):
 	of individual IPs in their string representation.
 
 	:param str ip_network:
-	:param str mask:
+	:param int mask:
 	:return: list
 	"""
-	if _its_pyv3:
-		if mask and '/' not in ip_network:
-			net = ipaddress.ip_network("{0}/{1}".format(ip_network, mask))
-			return [host.__str__() for host in net.hosts()]
-		elif '/' not in ip_network:
-			return [str(ipaddress.ip_address(ip_network))]
-		else:
-			net = ipaddress.ip_network(ip_network)
-			return [host.__str__() for host in net.hosts()]
-	elif _its_pyv2:
-		if mask and '/' not in ip_network:
-			net = netaddr.IPNetwork("{0}/{1}".format(ip_network, mask))
-			return [host.__str__() for host in net.iter_hosts()]
-		elif '/' not in ip_network:
-			return [str(netaddr.IPAddress(ip_network))]
-		else:
-			net = netaddr.IPNetwork(ip_network)
-			return [host.__str__() for host in net.iter_hosts()]
+	if mask and '/' not in ip_network:
+		net = ipaddress.ip_network("{0}/{1}".format(ip_network, mask))
+		return [host.__str__() for host in net.hosts()]
+	elif '/' not in ip_network:
+		return [str(ipaddress.ip_address(ip_network))]
+	else:
+		net = ipaddress.ip_network(ip_network)
+		return [host.__str__() for host in net.hosts()]
 
-def sort_ip_list(ip_list, unique=True):
+def sort_ipv4_list(ip_list, unique=True):
 	"""
 	Sorts a provided list of IPv4 addresses. Optionally can remove duplicate values
 	Supports IPv4 addresses with ports included (ex: [10.11.12.13:80, 10.11.12.13:8080])
+
 	:param ip_list: (list) iterable of IPv4 Addresses
 	:param unique: (bool) removes duplicate values if true
 	:return: sorted list of IP addresses

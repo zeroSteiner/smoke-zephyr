@@ -15,6 +15,8 @@ Functions
 
 .. autofunction:: format_bytes_size
 
+.. autofunction:: get_ip_list
+
 .. autofunction:: grep
 
 .. autofunction:: open_uri
@@ -30,6 +32,8 @@ Functions
 .. autofunction:: random_string_alphanumeric
 
 .. autofunction:: selection_collision
+
+.. autofunction:: sort_ipv4_list
 
 .. autofunction:: unescape_single_quote
 
