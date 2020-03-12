@@ -54,6 +54,7 @@ if sys.version_info < (3, 0):
 	_its_pyv2 = True
 	_its_pyv3 = False
 else:
+	import ipaddress
 	import urllib.parse
 	import urllib.request
 	_its_pyv2 = False
@@ -529,6 +530,43 @@ def is_valid_email_address(email_address):
 	"""
 	# requirements = re
 	return EMAIL_REGEX.match(email_address) != None
+
+def get_ip_list(ip_network, mask=None):
+	"""
+	Quickly convert an IPv4 or IPv6 network (CIDR or Subnet) to a list
+	of individual IPs in their string representation.
+
+	:param str ip_network:
+	:param int mask:
+	:return: list
+	"""
+	if mask and '/' not in ip_network:
+		net = ipaddress.ip_network("{0}/{1}".format(ip_network, mask))
+		return [host.__str__() for host in net.hosts()]
+	elif '/' not in ip_network:
+		return [str(ipaddress.ip_address(ip_network))]
+	else:
+		net = ipaddress.ip_network(ip_network)
+		return [host.__str__() for host in net.hosts()]
+
+def sort_ipv4_list(ip_list, unique=True):
+	"""
+	Sorts a provided list of IPv4 addresses. Optionally can remove duplicate values
+	Supports IPv4 addresses with ports included (ex: [10.11.12.13:80, 10.11.12.13:8080])
+
+	:param ip_list: (list) iterable of IPv4 Addresses
+	:param unique: (bool) removes duplicate values if true
+	:return: sorted list of IP addresses
+	"""
+	if unique:
+		ip_list = list(set(ip_list))
+	return sorted(ip_list, key=lambda ip: (
+		int(ip.split(".")[0]),
+		int(ip.split(".")[1]),
+		int(ip.split(".")[2]),
+		int(ip.split(".")[3].split(':')[0]),
+		int(ip.split(":")[1]) if ":" in ip else 0
+	))
 
 def open_uri(uri):
 	"""
