@@ -34,11 +34,7 @@ import copy
 import json
 import os
 import sys
-
-if sys.version_info >= (3, 3, 0):
-	from collections.abc import Mapping as _Mapping
-else:
-	from collections import Mapping as _Mapping
+from collections.abc import Mapping as _Mapping
 
 try:
 	import yaml

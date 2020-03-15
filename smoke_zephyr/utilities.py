@@ -33,6 +33,7 @@
 import collections
 import functools
 import inspect
+import ipaddress
 import itertools
 import logging
 import os
@@ -44,21 +45,9 @@ import subprocess
 import sys
 import time
 import unittest
+import urllib.parse
+import urllib.request
 import weakref
-
-if sys.version_info < (3, 0):
-	import urllib
-	import urlparse
-	urllib.parse = urlparse
-	urllib.request = urllib
-	_its_pyv2 = True
-	_its_pyv3 = False
-else:
-	import ipaddress
-	import urllib.parse
-	import urllib.request
-	_its_pyv2 = False
-	_its_pyv3 = True
 
 EMAIL_REGEX = re.compile(r'^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,6}$', flags=re.IGNORECASE)
 
@@ -144,11 +133,8 @@ class Cache(object):
 			target_function = args[0]
 			if not inspect.isfunction(target_function) and not inspect.ismethod(target_function):
 				raise RuntimeError('the cached object must be a function or method')
-			if _its_pyv2:
-				arg_spec = inspect.getargspec(target_function)      # pylint: disable=W1505
-			else:
-				arg_spec = inspect.getfullargspec(target_function)  # pylint: disable=W1505
-				arg_spec = _ArgSpec(args=arg_spec.args, varargs=arg_spec.varargs, keywords=arg_spec.kwonlyargs, defaults=arg_spec.defaults)
+			arg_spec = inspect.getfullargspec(target_function)  # pylint: disable=W1505
+			arg_spec = _ArgSpec(args=arg_spec.args, varargs=arg_spec.varargs, keywords=arg_spec.kwonlyargs, defaults=arg_spec.defaults)
 			if arg_spec.varargs or arg_spec.keywords:
 				raise RuntimeError('the cached function can not use dynamic args or kwargs')
 			self._target_function = target_function
