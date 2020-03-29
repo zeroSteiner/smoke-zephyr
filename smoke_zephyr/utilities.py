@@ -546,13 +546,14 @@ def sort_ipv4_list(ip_list, unique=True):
 	"""
 	if unique:
 		ip_list = list(set(ip_list))
-	return sorted(ip_list, key=lambda ip: (
+	return sorted([i.rstrip(':') for i in ip_list], key=lambda ip: (
 		int(ip.split(".")[0]),
 		int(ip.split(".")[1]),
 		int(ip.split(".")[2]),
 		int(ip.split(".")[3].split(':')[0]),
-                int(ip.split(":")[1]) if ":" in ip and len(ip.split(':')[1]) else 0
-	))
+        int(ip.split(":")[1]) if ":" in ip else 0
+        )
+    )
 
 def open_uri(uri):
 	"""
