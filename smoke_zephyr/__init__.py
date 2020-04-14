@@ -33,7 +33,7 @@
 import collections
 
 # Semantic Versioning: http://semver.org/spec/v2.0.0.html
-version_info = collections.namedtuple('version_info', ['major', 'minor', 'micro'])(2, 0, 0)
+version_info = collections.namedtuple('version_info', ['major', 'minor', 'micro'])(2, 0, 1)
 """A tuple representing the version information in the format ('major', 'minor', 'micro')"""
 
 version_label = ''
