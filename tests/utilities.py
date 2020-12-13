@@ -109,14 +109,14 @@ class UtilitiesTests(utilities.TestCase):
 	def test_get_ip_list(self):
 		cases = {
 			('192.168.1.0', None): ['192.168.1.0'],
-			('192.168.1.0/32', None): [],
-			('192.168.1.0/30', None): ['192.168.1.1', '192.168.1.2'],
-			('192.168.1.0', 32): [],
-			('192.168.1.0', 30): ['192.168.1.1', '192.168.1.2'],
+			('192.168.2.0/32', None): [],
+			('192.168.3.0/30', None): ['192.168.3.1', '192.168.3.2'],
+			('192.168.4.0', 32): [],
+			('192.168.5.0', 30): ['192.168.5.1', '192.168.5.2'],
 		}
 		for (ip_network, mask), ip_list in cases.items():
 			returned_ip_list = utilities.get_ip_list(ip_network, mask=mask)
-			self.assertEquals(returned_ip_list, ip_list, msg=("get_ip_list({!r}, mask={!r}) != {!r}".format(ip_network, mask, ip_list)))
+			self.assertEqual(returned_ip_list, ip_list, msg=("get_ip_list({!r}, mask={!r}) != {!r}".format(ip_network, mask, ip_list)))
 
 	def test_is_valid_email_address(self):
 		valid_emails = [

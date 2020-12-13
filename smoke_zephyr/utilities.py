@@ -528,12 +528,15 @@ def get_ip_list(ip_network, mask=None):
 	"""
 	if mask and '/' not in ip_network:
 		net = ipaddress.ip_network("{0}/{1}".format(ip_network, mask))
-		return [host.__str__() for host in net.hosts()]
 	elif '/' not in ip_network:
 		return [str(ipaddress.ip_address(ip_network))]
 	else:
 		net = ipaddress.ip_network(ip_network)
-		return [host.__str__() for host in net.hosts()]
+	hosts = net.hosts()
+	if net.netmask == ipaddress.IPv4Address('255.255.255.255') and sys.version_info > (3, 9):
+		# see: https://github.com/zeroSteiner/smoke-zephyr/issues/8
+		hosts = []
+	return [host.__str__() for host in hosts]
 
 def sort_ipv4_list(ip_list, unique=True):
 	"""
