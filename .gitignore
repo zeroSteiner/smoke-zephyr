@@ -3,6 +3,8 @@
 *.py[cod]
 
 .buildinfo
+.coverage
+.github/workflows/*.jnj
 .doctrees/*
 .idea/*
 build/*
@@ -11,5 +13,4 @@ docs/build
 docs/html
 smoke_zephyr.egg-info/*
 MANIFEST
-Pipfile
 Pipfile.lock
