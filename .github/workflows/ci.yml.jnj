@@ -1,0 +1,27 @@
+{% import 'base_ci.yml.jnj' as ci %}
+{% extends 'base_ci.yml.jnj' %}
+
+{% block jobs %}
+{{ ci.jobs_python('unit-tests', 'Test on Python v${{ matrix.python-version }}', versions=('3.4', '3.5', '3.6', '3.7', '3.8', '3.9')) }}
+      - run: pipenv run tests
+      - run: pipenv run tests-coverage
+
+{{ ci.jobs_python_publish_release() }}
+      - name: Create the distribution
+        run: pipenv run python setup.py build sdist
+
+      - name: Publish the distribution
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_PASSWORD }}
+
+      - name: Create the release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+{% endblock -%}

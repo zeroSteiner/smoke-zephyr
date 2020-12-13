@@ -1,0 +1,15 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+
+[dev-packages]
+sphinx = "*"
+coverage = "*"
+
+[scripts]
+tests = 'sh -c "PYTHONPATH=$(pwd)/lib python -m unittest -v tests"'
+tests-coverage = 'sh -c "PYTHONPATH=$(pwd)/lib coverage run -m unittest -v tests && coverage report --include=\"*/smoke_zephyr/*\""'
+
