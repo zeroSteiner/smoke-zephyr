@@ -32,6 +32,7 @@
 #
 
 import os
+import re
 import sys
 
 base_directory = os.path.dirname(__file__)
@@ -46,9 +47,19 @@ except ImportError:
 try:
 	with open(os.path.join(base_directory, 'README.rst')) as file_h:
 		long_description = file_h.read()
-except (IOError, OSError):
+except OSError:
 	sys.stderr.write('README.rst is unavailable, can not generate the long description\n')
 	long_description = None
+
+with open(os.path.join(base_directory, 'smoke_zephyr', '__init__.py')) as file_h:
+	match = re.search(
+		r'^version_info\s*=\s*(?:\w*\.)?namedtuple\(\'\w+\',\s*\[\'major\',\s*\'minor\',\s*\'micro\'\]\)\((\d+),\s*(\d+),\s*(\d+)\)$',
+		file_h.read(),
+		flags=re.MULTILINE
+	)
+if match is None:
+	raise RuntimeError('Unable to find the version information')
+version = '.'.join(map(str, match.groups()))
 
 DESCRIPTION = """\
 This project provides a collection of miscellaneous Python utilities.\
@@ -56,7 +67,7 @@ This project provides a collection of miscellaneous Python utilities.\
 
 setup(
 	name='smoke-zephyr',
-	version='2.0.1',
+	version=version,
 	author='Spencer McIntyre',
 	author_email='zeroSteiner@gmail.com',
 	maintainer='Spencer McIntyre',
@@ -76,5 +87,7 @@ setup(
 		'Programming Language :: Python :: 3.5',
 		'Programming Language :: Python :: 3.6',
 		'Programming Language :: Python :: 3.7',
+		'Programming Language :: Python :: 3.8',
+		'Programming Language :: Python :: 3.9',
 	]
 )
